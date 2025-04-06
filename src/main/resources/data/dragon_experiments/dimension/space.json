@@ -1,0 +1,16 @@
+{
+  "type": "dragon_experiments:space",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "lakes": false,
+      "features": false,
+      "layers": [
+        {
+          "height": 0,
+          "block": "air"
+        }
+      ]
+    }
+  }
+}

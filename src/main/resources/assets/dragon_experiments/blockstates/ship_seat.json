@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "dragon_experiments:block/ship_seat" },
+    "facing=east": { "model": "dragon_experiments:block/ship_seat", "y": 90 },
+    "facing=south": { "model": "dragon_experiments:block/ship_seat", "y": 180 },
+    "facing=west": { "model": "dragon_experiments:block/ship_seat", "y": 270 }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "vertex": "veil:blit_screen",
+  "fragment": "dragon_experiments:planet",
+  "textures": {
+    "CloudsTexture": "dragon_experiments:textures/shader/planet/clouds.png",
+    "EarthTexture": "dragon_experiments:textures/shader/planet/earth.png"
+  }
+}
+

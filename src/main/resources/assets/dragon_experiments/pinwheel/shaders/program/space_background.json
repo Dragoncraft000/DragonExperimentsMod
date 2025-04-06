@@ -1,0 +1,7 @@
+{
+  "vertex": "veil:blit_screen",
+  "fragment": "dragon_experiments:space_background",
+  "textures": {
+    "BackgroundTexture": "dragon_experiments:textures/shader/planet/milky_way.png"
+  }
+}

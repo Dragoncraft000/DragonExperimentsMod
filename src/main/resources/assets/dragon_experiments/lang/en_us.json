@@ -1,0 +1,12 @@
+{
+  "item.dragon_experiments.test_item": "Test Item",
+  "itemTooltip.dragon_experiments.test_item": "Nice Item",
+  "itemGroup.dragon_experiments_group": "Dragon Experiments",
+
+  "category.dragon_experiments.space": "Dragon Experiments",
+  "key.dragon_experiments.ship_roll": "Roll Ship",
+  "key.dragon_experiments.ship_down": "Move Ship Down",
+  "key.dragon_experiments.ship_up": "Move Ship Up",
+
+  "block.dragon_experiments.ship_seat": "Ship Controller Seat"
+}

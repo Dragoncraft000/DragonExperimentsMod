@@ -1,0 +1,26 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "dragon_experiments:space_background",
+      "in": "minecraft:main",
+      "out": "swap"
+    },
+    {
+      "type": "veil:copy",
+      "in": "swap",
+      "out": "minecraft:main"
+    },
+    {
+      "type": "veil:blit",
+      "shader": "dragon_experiments:planet",
+      "in": "minecraft:main"
+    }
+  ],
+  "framebuffers": {
+    "swap": {
+      "depth": false,
+      "format": "RGBA8"
+    }
+  }
+}

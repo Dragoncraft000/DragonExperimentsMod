@@ -1,0 +1,9 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "dragon_experiments:height_fog",
+      "in": "minecraft:main"
+    }
+  ]
+}
