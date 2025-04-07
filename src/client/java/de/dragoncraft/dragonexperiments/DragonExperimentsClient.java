@@ -32,16 +32,10 @@ public class DragonExperimentsClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		ShaderManager.initialize();
 		KeybindManager.initialize();
-			// This works for pipeline-specific uniforms
-/*		VeilEventPlatform.INSTANCE.preVeilPostProcessing((pipelineName, pipeline, context) -> {
-			if (SPACE_RENDER_PIPELINE.equals(pipelineName)) {
-				ShaderManager.updateSpaceShader(pipelineName,pipeline,context);
-			}
-		});*/
+
 		FabricVeilRenderLevelStageEvent.EVENT.register((stage, levelRenderer, bufferSource, matrixStack, frustumMatrix, projectionMatrix, renderTick, deltaTracker, camera, frustum) -> {
 			if (stage == VeilRenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
-
-				ShaderManager.updateSpaceShader(deltaTracker.getTickDelta(true));
+				ShaderManager.updateSpaceShader();
 			}
 		});
 

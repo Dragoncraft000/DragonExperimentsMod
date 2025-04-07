@@ -41,7 +41,7 @@ public class ShaderManager {
 
     }
 
-    public static void updateSpaceShader(float tickDelta) {
+    public static void updateSpaceShader() {
         if (MinecraftClient.getInstance().player == null) {
             return;
         }
@@ -99,8 +99,8 @@ public class ShaderManager {
             earth.setFloat("PlanetRotationSpeed", 1f);
             earth.setVector("AtmosphereRayleighCoeffiecents",5.5e-3f, 13.0e-3f, 22.4e-3f);
             earth.setFloat("AtmosphereMieCoeffiecent", (21e-3f * 0.5f));
-            earth.setFloat("AtmosphereBrightness", 0.9f);
-            earth.setFloat("AtmosphereRayleighScaleHeight",4);
+            earth.setFloat("AtmosphereBrightness", 1f);
+            earth.setFloat("AtmosphereRayleighScaleHeight",(5f));
             earth.setFloat("AtmosphereMieScaleHeight",1.2f);
 
         }

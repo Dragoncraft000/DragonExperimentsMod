@@ -90,7 +90,7 @@ public class KeybindManager {
         if (client.options.leftKey.isPressed()) steering.add(0,0,1);
         else if (client.options.rightKey.isPressed()) steering.add(0,0,-1);
 
-        if (client.options.sneakKey.isPressed()) steering.add(0,-1,0);
+        if (client.options.sprintKey.isPressed()) steering.add(0,-1,0);
         else if (upKey.isPressed() && client.player != null ) {
             steering.add(0,1,0);
         }

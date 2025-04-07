@@ -1,0 +1,14 @@
+{
+  "stages": [
+    {
+      "type": "veil:blit",
+      "shader": "dragon_experiments:atmosphere"
+    }
+  ],
+  "framebuffers": {
+    "swap": {
+      "depth": false,
+      "format": "RGBA8"
+    }
+  }
+}

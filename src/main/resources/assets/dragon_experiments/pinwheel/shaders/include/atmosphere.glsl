@@ -10,6 +10,7 @@ const int LIGHT_STEPS = 5;
 #define AMBIENT_BETA vec3(0.0)
 #define G 0.001 /* mie scattering direction, or how big the blob around the sun is */
 
+
 bool raySphereIntersect(vec3 rayOrigin, vec3 rayDir, vec3 sphereCenter, float sphereRadius, out vec2 result) {
     float sphereRadius2 = sphereRadius * sphereRadius;
     vec3 lvec = sphereCenter - rayOrigin;
