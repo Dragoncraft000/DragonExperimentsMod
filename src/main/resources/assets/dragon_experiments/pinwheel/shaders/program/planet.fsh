@@ -68,14 +68,10 @@ float standardSize = 127.;
         return;
     }
     if (atmoHit.x > atmoHit.y) {
-       return;
+        return;
     }
-
-
-    float atmoT = abs(atmoHit.x);
-
+    float atmoT = max(atmoHit.x,1);
     vec3 atmoP = ro + rd * atmoT;
-
         if (atmoT > t) {
             return;
         }
