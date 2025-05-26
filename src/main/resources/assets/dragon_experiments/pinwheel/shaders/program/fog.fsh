@@ -8,6 +8,7 @@ const float FogStart = -10;
 const float FogEnd = 100;
 uniform vec4 FogColor;
 uniform int FogShape;
+uniform float GameTime;
 
 in vec2 texCoord;
 
@@ -26,7 +27,7 @@ void main() {
     vec4 baseColor = texture(DiffuseSampler0, texCoord);
     float depthSample = texture(DiffuseDepthSampler, texCoord).r;
     vec3 pos = viewPosFromDepthSample(depthSample, texCoord);
-
+    vec4 worldPos = screenToWorldSpace(texCoord,depthSample);
     float vertexDistance = fog_distance(pos, FogShape);
-    fragColor = linear_fog(baseColor, vertexDistance, FogStart, FogEnd, FogColor);
+    fragColor = linear_fog(baseColor, vertexDistance + sin(worldPos.r * worldPos.g * worldPos.b * 0.00001 + GameTime * 1000) * 10, FogStart, FogEnd, vec4(1));
 }

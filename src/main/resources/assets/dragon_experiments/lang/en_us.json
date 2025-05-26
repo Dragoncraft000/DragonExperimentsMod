@@ -8,5 +8,7 @@
   "key.dragon_experiments.ship_down": "Move Ship Down",
   "key.dragon_experiments.ship_up": "Move Ship Up",
 
-  "block.dragon_experiments.ship_seat": "Ship Controller Seat"
+  "block.dragon_experiments.ship_seat": "Ship Controller Seat",
+  "block.dragon_experiments.privacy_glass": "Privacy Glass",
+  "block.dragon_experiments.clear_glass": "Clear Glass"
 }

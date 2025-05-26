@@ -11,7 +11,7 @@ vec2 rsi(vec3 r0, vec3 rd, float sr) {
     float b = 2.0 * dot(rd, r0);
     float c = dot(r0, r0) - (sr * sr);
     float d = (b*b) - 4.0*a*c;
-    if (d < 0.0) return vec2(1e5,-1e5);
+    if (d < 0.0) return vec2(1e12,-1e12);
     return vec2(
     (-b - sqrt(d))/(2.0*a),
     (-b + sqrt(d))/(2.0*a)
@@ -25,8 +25,10 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
 
     // Calculate the step size of the primary ray.
     vec2 p = rsi(r0, r, rAtmos);
-    if (p.x > p.y) return vec3(0,0,0);
-    p.y = min(p.y, rsi(r0, r, rPlanet).x);
+    if (p.y < 0.0) return vec3(0,0,0);
+
+    vec2 planetP = rsi(r0, r, rPlanet);
+    p.y = min(p.y, planetP.x);
     float iStepSize = (p.y - p.x) / float(iSteps);
 
     // Initialize the primary ray time.
@@ -65,8 +67,10 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
         iOdMie += odStepMie;
 
         // Calculate the step size of the secondary ray.
-        float jStepSize = rsi(iPos, pSun, rAtmos).y / float(jSteps);
+        vec2 lp = rsi(iPos, pSun, rAtmos);
 
+
+        float jStepSize = lp.y / float(jSteps);
         // Initialize the secondary ray time.
         float jTime = 0.0;
 
@@ -100,7 +104,6 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
 
         // Increment the primary ray time.
         iTime += iStepSize;
-
     }
 
     // Calculate and return the final color.

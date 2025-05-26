@@ -2,13 +2,8 @@
   "stages": [
     {
       "type": "veil:blit",
-      "shader": "dragon_experiments:atmosphere"
+      "shader": "dragon_experiments:atmosphere",
+      "in": "minecraft:main"
     }
-  ],
-  "framebuffers": {
-    "swap": {
-      "depth": false,
-      "format": "RGBA8"
-    }
-  }
+  ]
 }

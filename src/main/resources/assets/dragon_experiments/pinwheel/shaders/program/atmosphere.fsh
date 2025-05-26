@@ -15,8 +15,8 @@ uniform float SunBrightness = 22;
 uniform float AtmosphereBrightness = 0.9;
 uniform float AtmosphereCompression = 0;
 uniform vec3 AtmosphereRayleighCoeffiecents = vec3(5.5e-3, 13.0e-3, 22.4e-3);
-uniform float AtmosphereMieCoeffiecent = (21e-3 * 0.5) / 1.5;
-uniform float AtmosphereRayleighScaleHeight = 8;
+uniform float AtmosphereMieCoeffiecent = (21e-100 * 0.5) / 1.5;
+uniform float AtmosphereRayleighScaleHeight = 10;
 uniform float AtmosphereMieScaleHeight = 8;
 in vec2 texCoord;
 
@@ -28,43 +28,40 @@ void main() {
     vec4 pos = screenToLocalSpace(texCoord, depthSample);
     vec4 worldPos = screenToWorldSpace(texCoord,depthSample);
     fragColor.rgb = baseColor.rgb;
-        return;
+    fragColor.a = 1;
 
     vec2 uv = texCoord - vec2(0.5,0.5);
     vec3 rd = viewDirFromUv(texCoord);
-    vec3 ro =  VeilCamera.CameraPosition;
-
-    float standardSize = 127.;
-    float sizeMod = PlanetSize / defaultScaleSize;
-    float atmoSize = PlanetSize + AtmosphereSize * sizeMod;
+    vec3 ro =  VeilCamera.CameraPosition + vec3(0,900,0);
     float sceneDist = length(ro - worldPos.rgb);
-    vec2 atmoHit = rsi(ro - PlanetPos,rd,atmoSize);
+    vec2 atmoHit = rsi(ro,rd,1100);
+    if (atmoHit.y < 0) {
+        return;
+    }
     if (atmoHit.y > sceneDist && depthSample < 1) {
         return;
     }
     if (atmoHit.x > atmoHit.y) {
-       return;
+        return;
     }
-
-    float atmoT = abs(atmoHit.x);
-
+    float atmoT = (atmoHit.x);
     vec3 atmoP = ro + rd * atmoT;
 
-        vec3 color = atmosphere(
-            rd,           // normalized ray direction
-            atmoP - PlanetPos,               // ray origin
-            LightPosition - PlanetPos,                        // position of the sun
-            SunBrightness,                           // intensity of the sun
-            PlanetSize,                         // radius of the planet in meters
-            atmoSize - AtmosphereCompression,                         // radius of the atmosphere in meters
-            (AtmosphereRayleighCoeffiecents * AtmosphereBrightness) / sizeMod, // Rayleigh scattering coefficient
-            AtmosphereMieCoeffiecent / sizeMod,                          // Mie scattering coefficient
-            AtmosphereRayleighScaleHeight * sizeMod,                            // Rayleigh scale height
-            AtmosphereMieScaleHeight * sizeMod,                          // Mie scale height
-            0.758                           // Mie preferred scattering direction
-        );
-        color = 1.0 - exp(-1.0 * color);
-        fragColor.rgb = fragColor.rgb + color ;
+    vec3 color = atmosphere(
+        rd,           // normalized ray direction
+        ro,               // ray origin
+        vec3(1000,0,0),                        // position of the sun
+        22,                           // intensity of the sun
+        1000,                         // radius of the planet in meters
+        1100,                         // radius of the atmosphere in meters
+        AtmosphereRayleighCoeffiecents, // Rayleigh scattering coefficient
+        AtmosphereMieCoeffiecent,                          // Mie scattering coefficient
+        AtmosphereRayleighScaleHeight,                            // Rayleigh scale height
+        AtmosphereMieScaleHeight,                          // Mie scale height
+        0.758                           // Mie preferred scattering direction
+    );
+    color = 1.0 - exp(-1.0 * color);
+    fragColor.rgb = fragColor.rgb + color ;
         //fragColor.rgb = vec3(getPlanetAtmoDistance(atmoP,PlanetPos,PlanetSize,7));
 
 }

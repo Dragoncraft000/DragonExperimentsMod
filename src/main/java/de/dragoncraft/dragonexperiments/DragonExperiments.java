@@ -23,6 +23,7 @@ public class DragonExperiments implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
+		TickTaskScheduler.init();
 		ModItemGroups.initialize();
 		ModItems.initialize();
 		ModBlocks.initialize();

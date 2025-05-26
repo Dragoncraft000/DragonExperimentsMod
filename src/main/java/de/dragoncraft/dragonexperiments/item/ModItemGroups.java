@@ -29,6 +29,8 @@ public class ModItemGroups {
                     itemGroup.add(ModItems.TEST_ITEM);
                     itemGroup.add(ModBlocks.TEST_BLOCK);
                     itemGroup.add(ModBlocks.SHIP_SEAT_BLOCK);
+                    itemGroup.add(ModBlocks.PRIVACY_GLASS_BLOCK);
+                    itemGroup.add(ModBlocks.CLEAR_GLASS_BLOCK);
         });
     }
 }

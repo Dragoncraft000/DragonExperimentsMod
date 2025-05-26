@@ -1,29 +1,21 @@
 package de.dragoncraft.dragonexperiments;
 
+import de.dragoncraft.dragonexperiments.block.ModBlocks;
 import de.dragoncraft.dragonexperiments.entity.ModEntities;
 import de.dragoncraft.dragonexperiments.render.ShaderManager;
 import de.dragoncraft.dragonexperiments.render.entity.ShipSeatEntityRender;
 import de.dragoncraft.dragonexperiments.ship.ShipController;
-import foundry.veil.Veil;
-import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.post.PostPipeline;
-import foundry.veil.api.client.render.post.PostProcessingManager;
-import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import foundry.veil.api.event.VeilRenderLevelStageEvent;
 import foundry.veil.fabric.event.FabricVeilRenderLevelStageEvent;
-import foundry.veil.impl.client.render.pipeline.PostPipelineContext;
-import foundry.veil.platform.VeilEventPlatform;
 import lombok.Getter;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 
 public class DragonExperimentsClient implements ClientModInitializer {
-
-	private static final Identifier SPACE_RENDER_PIPELINE = Identifier.of(DragonExperiments.MOD_ID, "space_shader");
 
 	@Getter
 	private static ShipController shipController;
@@ -44,5 +36,8 @@ public class DragonExperimentsClient implements ClientModInitializer {
 
 		EntityRendererRegistry.register(ModEntities.SEAT_ENTITY, ShipSeatEntityRender::new);
 
+
+		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PRIVACY_GLASS_BLOCK, RenderLayer.getTranslucent());
+		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CLEAR_GLASS_BLOCK, RenderLayer.getTranslucent());
 	}
 }

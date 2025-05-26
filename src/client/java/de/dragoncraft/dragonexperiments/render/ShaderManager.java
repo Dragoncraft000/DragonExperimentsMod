@@ -1,20 +1,16 @@
 package de.dragoncraft.dragonexperiments.render;
 
 import de.dragoncraft.dragonexperiments.DragonExperiments;
-import de.dragoncraft.dragonexperiments.DragonExperimentsClient;
 import de.dragoncraft.dragonexperiments.components.ModComponents;
 import de.dragoncraft.dragonexperiments.components.ShipComponent;
-import de.dragoncraft.dragonexperiments.ship.ShipController;
 import de.dragoncraft.dragonexperiments.utils.InterpolationUtils;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.post.PostPipeline;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class ShaderManager {
@@ -23,10 +19,7 @@ public class ShaderManager {
     private static final Identifier SPACE_RENDER_PIPELINE = Identifier.of(DragonExperiments.MOD_ID, "space_shader");
 
     private static final Identifier PLANET_SHADER = Identifier.of(DragonExperiments.MOD_ID, "planet");
-    private static boolean planetEnabled = true;
     private static boolean registered = false;
-
-    private static Vector3f lastRot = new Vector3f(0);
 
     private static long lastUpdateTick = 0;
 
@@ -98,7 +91,7 @@ public class ShaderManager {
             earth.setFloat("AtmosphereSize", 50f);
             earth.setFloat("PlanetRotationSpeed", 1f);
             earth.setVector("AtmosphereRayleighCoeffiecents",5.5e-3f, 13.0e-3f, 22.4e-3f);
-            earth.setFloat("AtmosphereMieCoeffiecent", (21e-3f * 0.5f));
+            earth.setFloat("AtmosphereMieCoeffiecent", (21e-10f * 0.5f));
             earth.setFloat("AtmosphereBrightness", 0.9f);
             earth.setFloat("AtmosphereRayleighScaleHeight",(5f));
             earth.setFloat("AtmosphereMieScaleHeight",1.2f);
@@ -120,7 +113,4 @@ public class ShaderManager {
         }
     }
 
-    public static void toggleSpaceShader() {
-        planetEnabled = !planetEnabled;
-    }
 }

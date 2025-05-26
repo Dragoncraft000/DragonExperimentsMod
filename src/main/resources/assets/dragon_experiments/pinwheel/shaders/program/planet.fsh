@@ -10,13 +10,11 @@ uniform sampler2D CloudsTexture;
 
 uniform float GameTime;
 
-
 // System Specifc Uniforms
 vec3 LightPosition = vec3(100000,400, 0);
 uniform float SunBrightness = 22;
 uniform vec3 ShipPos = vec3(0,0,0);
 uniform vec4 ShipRotation = vec4(0,0,0,0);
-        
 
 // Planet Specific Uniforms
 uniform float PlanetSize;
@@ -38,18 +36,23 @@ out vec4 fragColor;
 void main() {
     vec4 baseColor = texture(DiffuseSampler0, texCoord);
     float depthSample = texture(DiffuseDepthSampler, texCoord).r;
-    vec4 pos = screenToLocalSpace(texCoord, depthSample) + vec4(ShipPos,0);
-    vec4 worldPos = screenToWorldSpace(texCoord,depthSample) + vec4(ShipPos,0);
-
+    vec4 worldPos = -screenToWorldSpace(texCoord,depthSample) + vec4(ShipPos,0);
 
     vec2 uv = texCoord - vec2(0.5,0.5);
     vec3 rd = viewDirFromUv(texCoord);
     rd = rotateByQuaternion(rd,ShipRotation);
-    vec3 ro =  VeilCamera.CameraPosition + ShipPos;
+    vec3 ro = -VeilCamera.CameraPosition + ShipPos;
+
+    vec2 planetHit = rsi(ro - PlanetPos,rd,PlanetSize);
+    bool rayhitPlanet = true;
 
     float t = raymarchPlanet(ro,rd,PlanetPos,PlanetSize);
     fragColor = baseColor;
-    if (hitPlanet(t,depthSample,ro,worldPos)) {
+    float sceneDist = length(ro - worldPos.rgb);
+    if (planetHit.y > sceneDist && depthSample < 1) {
+        rayhitPlanet = false;
+    }
+    if (hitPlanet(t,depthSample,ro,worldPos) && rayhitPlanet) {
         vec3 p = ro + rd * t;
         vec3 normal = genNormal(p,PlanetPos,PlanetSize);
         float diffLight = genLight(p,normal,LightPosition);
@@ -60,37 +63,43 @@ void main() {
         fragColor = vec4(((albedo.rgb * diffLight) + (clouds.rgb * 0.3 * diffLight)),1);
     }
 float standardSize = 127.;
+
     float sizeMod = PlanetSize / defaultScaleSize;
     float atmoSize = PlanetSize + AtmosphereSize * sizeMod;
-    float sceneDist = length(ro - worldPos.rgb);
     vec2 atmoHit = rsi(ro - PlanetPos,rd,atmoSize);
+    if (atmoHit.y < 0) {
+        return;
+    }
+    if (atmoHit.x < 0 && atmoHit.y > 0) {
+        atmoHit.x = 0;
+    }
     if (atmoHit.y > sceneDist && depthSample < 1) {
         return;
     }
     if (atmoHit.x > atmoHit.y) {
         return;
     }
-    float atmoT = max(atmoHit.x,1);
+    float atmoT = (atmoHit.x);
     vec3 atmoP = ro + rd * atmoT;
-        if (atmoT > t) {
-            return;
-        }
-        vec3 color = atmosphere(
-            rd,           // normalized ray direction
-            atmoP - PlanetPos,               // ray origin
-            LightPosition - PlanetPos,                        // position of the sun
-            SunBrightness,                           // intensity of the sun
-            PlanetSize,                         // radius of the planet in meters
-            atmoSize - AtmosphereCompression,                         // radius of the atmosphere in meters
-            (AtmosphereRayleighCoeffiecents * AtmosphereBrightness) / sizeMod, // Rayleigh scattering coefficient
-            AtmosphereMieCoeffiecent / sizeMod,                          // Mie scattering coefficient
-            AtmosphereRayleighScaleHeight * sizeMod,                            // Rayleigh scale height
-            AtmosphereMieScaleHeight * sizeMod,                          // Mie scale height
-            0.758                           // Mie preferred scattering direction
-        );
-        color = 1.0 - exp(-1.0 * color);
-        fragColor.rgb = fragColor.rgb + color ;
-        //fragColor.rgb = vec3(getPlanetAtmoDistance(atmoP,PlanetPos,PlanetSize,7));
+    if (atmoT > t) {
+        return;
+    }
+    vec3 color = atmosphere(
+        rd,           // normalized ray direction
+        atmoP - PlanetPos,               // ray origin
+        LightPosition - PlanetPos,                        // position of the sun
+        SunBrightness,                           // intensity of the sun
+        PlanetSize,                         // radius of the planet in meters
+        atmoSize - AtmosphereCompression,                         // radius of the atmosphere in meters
+        (AtmosphereRayleighCoeffiecents * AtmosphereBrightness) / sizeMod, // Rayleigh scattering coefficient
+        AtmosphereMieCoeffiecent / sizeMod,                          // Mie scattering coefficient
+        AtmosphereRayleighScaleHeight * sizeMod,                            // Rayleigh scale height
+        AtmosphereMieScaleHeight * sizeMod,                          // Mie scale height
+        0.758                           // Mie preferred scattering direction
+    );
+    color = 1.0 - exp(-1.0 * color);
+    fragColor.rgb = fragColor.rgb + color;
+    //fragColor.rgb = vec3(getPlanetAtmoDistance(atmoP,PlanetPos,PlanetSize,7));
 
 }
 

@@ -5,13 +5,11 @@ import de.dragoncraft.dragonexperiments.entity.SeatEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -26,18 +24,20 @@ public class ShipSeatBlock extends Block {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!world.isClient) {
-            if (player.getVehicle() == null) {
-                SeatEntity seat = ModEntities.SEAT_ENTITY.create(world);
-                if (seat != null) {
-                    seat.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 0, 0);
-                    seat.setInvisible(true);
-                    seat.setNoGravity(true);
-                    world.spawnEntity(seat);
-                    player.startRiding(seat);
-                } else {
-                    System.out.println("Failed to create seat entity!");
-                }
+        if (world.isClient) {
+            return super.onUse(state,world,pos,player,hit);
+        }
+        System.out.println("Test");
+        if (player.getVehicle() == null) {
+            SeatEntity seat = ModEntities.SEAT_ENTITY.create(world);
+            if (seat != null) {
+                seat.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 0, 0);
+                seat.setInvisible(true);
+                seat.setNoGravity(true);
+                world.spawnEntity(seat);
+                player.startRiding(seat);
+            } else {
+                System.out.println("Failed to create seat entity!");
             }
         }
         return ActionResult.SUCCESS;

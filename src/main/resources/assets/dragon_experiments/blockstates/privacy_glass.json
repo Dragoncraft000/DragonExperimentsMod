@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "closed=false": { "model": "dragon_experiments:block/clear_glass" },
+    "closed=true": { "model": "dragon_experiments:block/privacy_glass" }
+  }
+}
