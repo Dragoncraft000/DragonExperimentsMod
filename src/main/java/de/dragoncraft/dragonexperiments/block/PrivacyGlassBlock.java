@@ -75,6 +75,7 @@ public class PrivacyGlassBlock extends Block implements BlockEntityProvider {
         }
     }
 
+
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockEntity be = world.getBlockEntity(pos);
@@ -91,6 +92,34 @@ public class PrivacyGlassBlock extends Block implements BlockEntityProvider {
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new ToggleGlassBlockEntity(pos,state);
     }
+
+    @Override
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+    @Override
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return state.get(TRANSPARENT) ? 15 : 0;
+    }
+    @Override
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        if (world.isClient) return;
+
+        boolean powered = world.isReceivingRedstonePower(pos);
+        ToggleGlassBlockEntity be = (ToggleGlassBlockEntity) world.getBlockEntity(pos);
+        if (be == null) return;
+        if (powered && !be.wasRedstonePowered()) {
+            be.setRedstonePowered(true);
+            int updateId = nextUpdateId++;
+            boolean newTransparency = !state.get(PrivacyGlassBlock.TRANSPARENT);
+            propagateToggle((ServerWorld) world, pos, newTransparency, updateId);
+        } else if (!powered && be.wasRedstonePowered()) {
+            be.setRedstonePowered(false);
+        }
+    }
+
+
+
 }
 
 

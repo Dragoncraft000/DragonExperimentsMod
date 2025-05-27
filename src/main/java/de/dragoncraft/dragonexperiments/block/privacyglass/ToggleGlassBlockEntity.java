@@ -13,6 +13,7 @@ public class ToggleGlassBlockEntity extends BlockEntity {
     private boolean pendingTransparency = false;
     @Getter
     private int pendingUpdateId = -1;
+    private boolean redstonePowered = false;
 
     public ToggleGlassBlockEntity(BlockPos pos, BlockState state) {
         super(ModEntities.TOGGLE_GLASS_BLOCK_ENTITY_TYPE, pos, state);
@@ -29,6 +30,14 @@ public class ToggleGlassBlockEntity extends BlockEntity {
 
     public boolean getPendingTransparency() {
         return pendingTransparency;
+    }
+
+    public boolean wasRedstonePowered() {
+        return redstonePowered;
+    }
+
+    public void setRedstonePowered(boolean powered) {
+        this.redstonePowered = powered;
     }
 
 }
