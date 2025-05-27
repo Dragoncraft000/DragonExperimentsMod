@@ -1,6 +1,7 @@
 package de.dragoncraft.dragonexperiments.entity;
 
 import de.dragoncraft.dragonexperiments.block.ModBlocks;
+import de.dragoncraft.dragonexperiments.block.privacyglass.ReinforcedToggleGlassBlockEntity;
 import de.dragoncraft.dragonexperiments.block.privacyglass.ToggleGlassBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;
@@ -26,6 +27,12 @@ public class ModEntities {
                     Registries.BLOCK_ENTITY_TYPE,
                     Identifier.of(MOD_ID, "toggle_privacy_glass_entity"),
                     BlockEntityType.Builder.create(ToggleGlassBlockEntity::new,ModBlocks.PRIVACY_GLASS_BLOCK).build(null)
+            );
+    public static final BlockEntityType<ReinforcedToggleGlassBlockEntity> REINFORCED_GLASS_BLOCK_ENTITY_TYPE =
+            Registry.register(
+                    Registries.BLOCK_ENTITY_TYPE,
+                    Identifier.of(MOD_ID, "reinforced_toggle_privacy_glass_entity"),
+                    BlockEntityType.Builder.create(ReinforcedToggleGlassBlockEntity::new,ModBlocks.REINFORCED_PRIVACY_GLASS_BLOCK).build(null)
             );
 
     public static void initialize() {

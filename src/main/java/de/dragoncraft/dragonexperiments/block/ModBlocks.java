@@ -16,6 +16,7 @@ public class ModBlocks {
 	public static final Block CLEAR_GLASS_BLOCK = registerBlock(new ClearGlassBlock(AbstractBlock.Settings.copy(Blocks.GLASS).nonOpaque()),"clear_glass");
 
 	public static final Block PRIVACY_GLASS_BLOCK = registerBlock(new PrivacyGlassBlock(AbstractBlock.Settings.copy(Blocks.GLASS).nonOpaque()),"privacy_glass");
+	public static final Block REINFORCED_PRIVACY_GLASS_BLOCK = registerBlock(new ReinforcedPrivacyGlassBlock(AbstractBlock.Settings.copy(Blocks.GLASS).nonOpaque()),"reinforced_privacy_glass");
 
 	public static final Block SHIP_SEAT_BLOCK = registerBlock(new ShipSeatBlock(AbstractBlock.Settings.copy(Blocks.IRON_BLOCK).strength(1.0f).nonOpaque()),"ship_seat");
 	private static Item registerBlockItem(Block block, String id) {

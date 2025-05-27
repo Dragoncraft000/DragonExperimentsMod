@@ -13,7 +13,6 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.util.Identifier;
 
 public class DragonExperimentsClient implements ClientModInitializer {
 
@@ -38,6 +37,7 @@ public class DragonExperimentsClient implements ClientModInitializer {
 
 
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PRIVACY_GLASS_BLOCK, RenderLayer.getTranslucent());
+		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.REINFORCED_PRIVACY_GLASS_BLOCK, RenderLayer.getTranslucent());
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CLEAR_GLASS_BLOCK, RenderLayer.getTranslucent());
 	}
 }

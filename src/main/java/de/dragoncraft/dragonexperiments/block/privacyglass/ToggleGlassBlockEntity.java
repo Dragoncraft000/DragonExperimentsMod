@@ -4,6 +4,7 @@ import de.dragoncraft.dragonexperiments.entity.ModEntities;
 import lombok.Getter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 
 public class ToggleGlassBlockEntity extends BlockEntity {
@@ -17,6 +18,9 @@ public class ToggleGlassBlockEntity extends BlockEntity {
 
     public ToggleGlassBlockEntity(BlockPos pos, BlockState state) {
         super(ModEntities.TOGGLE_GLASS_BLOCK_ENTITY_TYPE, pos, state);
+    }
+    public ToggleGlassBlockEntity(BlockEntityType type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public void setUpdateId(int id) {
