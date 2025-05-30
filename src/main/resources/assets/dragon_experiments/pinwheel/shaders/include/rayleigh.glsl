@@ -22,7 +22,6 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
     // Normalize the sun and view directions.
     pSun = normalize(pSun);
     r = normalize(r);
-
     // Calculate the step size of the primary ray.
     vec2 p = rsi(r0, r, rAtmos);
     if (p.y < 0.0) return vec3(0,0,0);

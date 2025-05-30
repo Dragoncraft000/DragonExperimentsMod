@@ -4,14 +4,15 @@
 
 uniform sampler2D DiffuseSampler0;
 uniform sampler2D DiffuseDepthSampler;
-uniform sampler2D SolidDepthSampler;
-uniform sampler2D EarthTexture;
-uniform sampler2D CloudsTexture;
+uniform sampler2D PlanetTexture;
+uniform sampler2D UpperLayerTexture;
+uniform int useUpperLayer;
+uniform int useBaseLayer;
 
 uniform float GameTime;
 
 // System Specifc Uniforms
-vec3 LightPosition = vec3(100000,400, 0);
+vec3 LightPosition;
 uniform float SunBrightness = 22;
 uniform vec3 ShipPos = vec3(0,0,0);
 uniform vec4 ShipRotation = vec4(0,0,0,0);
@@ -37,31 +38,41 @@ void main() {
     vec4 baseColor = texture(DiffuseSampler0, texCoord);
     float depthSample = texture(DiffuseDepthSampler, texCoord).r;
     vec4 worldPos = -screenToWorldSpace(texCoord,depthSample) + vec4(ShipPos,0);
-
+    gl_FragDepth = depthSample;
     vec2 uv = texCoord - vec2(0.5,0.5);
     vec3 rd = viewDirFromUv(texCoord);
     rd = rotateByQuaternion(rd,ShipRotation);
-    vec3 ro = -VeilCamera.CameraPosition + ShipPos;
+    vec3 ro = rotateByQuaternion(VeilCamera.CameraPosition,ShipRotation) + ShipPos;
 
     vec2 planetHit = rsi(ro - PlanetPos,rd,PlanetSize);
     bool rayhitPlanet = true;
 
     float t = raymarchPlanet(ro,rd,PlanetPos,PlanetSize);
     fragColor = baseColor;
-    float sceneDist = length(ro - worldPos.rgb);
+
+    float sceneDist = length(ro + worldPos.rgb / worldPos.w);
     if (planetHit.y > sceneDist && depthSample < 1) {
-        rayhitPlanet = false;
+            rayhitPlanet = false;
     }
     if (hitPlanet(t,depthSample,ro,worldPos) && rayhitPlanet) {
         vec3 p = ro + rd * t;
+        gl_FragDepth = worldToScreenSpace(vec4(worldPos - vec4(ShipPos,0))).z;
         vec3 normal = genNormal(p,PlanetPos,PlanetSize);
         float diffLight = genLight(p,normal,LightPosition);
+        if (length(PlanetPos - LightPosition) < 1000) {
+            diffLight = 1;
+        }
         vec3 texDir = normalize(p - PlanetPos);
         vec2 planetTexCoord = normalToSpherical(texDir);
-        vec4 albedo = texture(EarthTexture, planetTexCoord + vec2(GameTime * PlanetRotationSpeed,0));
-        vec4 clouds = texture(CloudsTexture, planetTexCoord + vec2(GameTime * PlanetRotationSpeed * 0.6,0));
+        vec4 albedo = texture(PlanetTexture, planetTexCoord + vec2(GameTime * PlanetRotationSpeed,0)) * useBaseLayer;
+        vec4 clouds = texture(UpperLayerTexture, planetTexCoord + vec2(GameTime * PlanetRotationSpeed * 0.6,0)) * useUpperLayer;
         fragColor = vec4(((albedo.rgb * diffLight) + (clouds.rgb * 0.3 * diffLight)),1);
     }
+    if (AtmosphereSize == 0 || (AtmosphereRayleighScaleHeight == 0 && AtmosphereMieScaleHeight == 0)) {
+        return;
+    }
+
+
 float standardSize = 127.;
 
     float sizeMod = PlanetSize / defaultScaleSize;
@@ -89,7 +100,7 @@ float standardSize = 127.;
         atmoP - PlanetPos,               // ray origin
         LightPosition - PlanetPos,                        // position of the sun
         SunBrightness,                           // intensity of the sun
-        PlanetSize,                         // radius of the planet in meters
+        PlanetSize,                         // radius of the celestialBody in meters
         atmoSize - AtmosphereCompression,                         // radius of the atmosphere in meters
         (AtmosphereRayleighCoeffiecents * AtmosphereBrightness) / sizeMod, // Rayleigh scattering coefficient
         AtmosphereMieCoeffiecent / sizeMod,                          // Mie scattering coefficient
@@ -97,6 +108,7 @@ float standardSize = 127.;
         AtmosphereMieScaleHeight * sizeMod,                          // Mie scale height
         0.758                           // Mie preferred scattering direction
     );
+
     color = 1.0 - exp(-1.0 * color);
     fragColor.rgb = fragColor.rgb + color;
     //fragColor.rgb = vec3(getPlanetAtmoDistance(atmoP,PlanetPos,PlanetSize,7));

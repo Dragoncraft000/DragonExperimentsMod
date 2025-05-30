@@ -1,0 +1,7 @@
+{
+  "depth": true,
+  "format": "RGBA16F",
+  "autoClear": true,
+
+  "name": "CelestialObjectsBuffer"
+}

@@ -8,7 +8,6 @@ uniform vec4 ShipRotation = vec4(0,0,0,0);
 uniform float GameTime;
 
 in vec2 texCoord;
-
 out vec4 fragColor;
 
 void main() {
@@ -19,11 +18,12 @@ void main() {
     vec3 rd = normalize(pos.xyz);
     rd = rotateByQuaternion(rd,ShipRotation);
     if (depthSample < 1) {
+
         fragColor = baseColor;
+        gl_FragDepth = depthSample;
         return;
     }
-
+    gl_FragDepth = 1;
     vec2 planetTexCoord = normalToSpherical(rd);
-    //fragColor = vec4(planetTexCoord,1,1);
     fragColor = texture(BackgroundTexture, planetTexCoord);
 }

@@ -1,8 +1,8 @@
 #include veil:space_helper
 #include dragon_experiments:raymarching
 
-const int MAX_STEPS = 200;
-const float MAX_DISTANCE = 10000000;
+const int MAX_STEPS = 400;
+const float MAX_DISTANCE = 1000000000;
 const float HIT_DISTANCE = 0.01;
 
 mat2 rot2D(float angle) {
@@ -65,7 +65,7 @@ bool hitPlanet(float t,float depth,vec3 ro,vec4 worldPos) {
     if (t > MAX_DISTANCE || depth > t) {
         return false;
     }
-    float sceneDist = length(ro - worldPos.rgb);
+    float sceneDist = length(ro + worldPos.rgb / worldPos.w);
     if (t > sceneDist && depth < 1) {
         return false;
     }

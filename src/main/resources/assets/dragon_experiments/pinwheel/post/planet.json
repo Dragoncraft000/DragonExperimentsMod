@@ -1,9 +1,26 @@
 {
   "stages": [
     {
+      "type": "veil:mask",
+      "depth": true
+    },
+    {
       "type": "veil:blit",
       "shader": "dragon_experiments:planet",
-      "in": "minecraft:main"
+      "in": "dragon_experiments:celestial",
+      "out": "swap"
+    },
+    {
+      "type": "veil:copy",
+      "in": "swap",
+      "depth": true,
+      "out": "dragon_experiments:celestial"
     }
-  ]
+  ],
+  "framebuffers": {
+    "swap": {
+      "depth": true,
+      "format": "RGBA16F"
+    }
+  }
 }

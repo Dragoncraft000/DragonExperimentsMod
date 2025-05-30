@@ -59,7 +59,7 @@ public class SeatEntity extends Entity  {
             component.brakeShip();
             return;
         }
-        component.accelerateLocal(steering.mul(2));
+        component.accelerateLocal(steering.mul(200));
 
     }
 

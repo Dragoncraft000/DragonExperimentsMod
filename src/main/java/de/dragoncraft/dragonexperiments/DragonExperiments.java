@@ -6,8 +6,9 @@ import de.dragoncraft.dragonexperiments.item.ModItemGroups;
 import de.dragoncraft.dragonexperiments.item.ModItems;
 import de.dragoncraft.dragonexperiments.networking.ship.SeatInputPayload;
 import de.dragoncraft.dragonexperiments.networking.ship.SeatInputReciever;
+import de.dragoncraft.dragonexperiments.solarsystem.Universe;
 import net.fabricmc.api.ModInitializer;
-
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,5 +31,8 @@ public class DragonExperiments implements ModInitializer {
 		ModEntities.initialize();
 		PayloadTypeRegistry.playC2S().register(SeatInputPayload.ID, SeatInputPayload.CODEC);
 		SeatInputReciever.initialize();
+
+		Universe.initialize();
+		ServerTickEvents.START_SERVER_TICK.register((id) -> Universe.tickBodies());
 	}
 }

@@ -104,7 +104,7 @@ public class ShipComponent implements ShipComponentInterface {
     }
 
     public void brakeShip() {
-        setShipVelocity(getShipVelocity().normalize().multiply(Math.max(0,getShipVelocity().length() - 2)));
+        setShipVelocity(getShipVelocity().normalize().multiply(Math.max(0,getShipVelocity().length() - 100000)));
     }
     @Override
     public void serverTick() {
