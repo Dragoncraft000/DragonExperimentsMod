@@ -18,8 +18,6 @@ public class CelestialBody {
     public static int PLANET_DISTANCE_DIVIDER = 1;
     public static int PLANET_SCALE_DIVIDER = 1;
 
-
-
     public static int MAX_RECURSION_LEVELS = 10;
 
     private final String bodyName;
@@ -29,25 +27,19 @@ public class CelestialBody {
     private Identifier upperLayerTextureName;
 
     @Setter
-    private boolean rendered;
+    protected boolean rendered;
 
-    private boolean staticPosition = false;
+    protected boolean staticPosition = false;
 
-    private int orbitDistance = 10000;
-    private double orbitTime = 10;
+    protected int orbitDistance = 10000;
+    protected double orbitTime = 10;
 
-    private int radius;
-    private double rotationTime;
+    protected int radius;
+    protected double rotationTime;
 
-    private float atmosphereSize = 50;
-    private Vec3d atmosphereRayleighCoeffiecents = new Vec3d(55,130,224);
-    private float atmosphereMieCoeffiecent = 105f;
+    protected final List<CelestialBody> orbitingCelestialBodies = new ArrayList<>();
 
-    private float atmosphereRayleighScaleHeight = 5;
-    private float atmosphereMieScaleHeight = 1.2f;
-    private final List<CelestialBody> orbitingCelestialBodies = new ArrayList<>();
-
-    private double currentOrbitAngle = 0;
+    protected double currentOrbitAngle = 0;
 
     @Getter
     protected Vec3d currentPosition = new Vec3d(0,0,0);
@@ -100,21 +92,7 @@ public class CelestialBody {
         this.orbitTime = orbitTime;
         return this;
     }
-    public CelestialBody setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight, float mieCoeffiecent, float mieScaleHeight, float atmosphereSize) {
-        this.atmosphereRayleighCoeffiecents = rayleighCoeffiecents;
-        this.atmosphereRayleighScaleHeight = rayleighScaleHeight;
-        this.atmosphereMieCoeffiecent = mieCoeffiecent;
-        this.atmosphereMieScaleHeight = mieScaleHeight;
-        this.atmosphereSize = atmosphereSize;
-        return this;
-    }
-    public CelestialBody setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight, float mieCoeffiecent, float mieScaleHeight) {
-        return setAtmosphere(rayleighCoeffiecents,rayleighScaleHeight,mieCoeffiecent,mieScaleHeight,atmosphereSize);
-    }
 
-    public CelestialBody disableAtmosphere() {
-        return setAtmosphere(new Vec3d(0,0,0),0,0,0,0);
-    }
 
 
     private void addReferenceFrame(CelestialBody parent) {
@@ -129,7 +107,7 @@ public class CelestialBody {
         if (recursions > MAX_RECURSION_LEVELS) {
             return;
         }
-        lastPosition = currentPosition;
+        lastPosition = new Vec3d(currentPosition.x,currentPosition.y,currentPosition.z);
         if (!staticPosition) {
             currentOrbitAngle += (1 / orbitTime) / 24000;
             if (currentOrbitAngle > 360) {
@@ -148,24 +126,17 @@ public class CelestialBody {
         if (!rendered) {
             return false;
         }
-
-        ShaderProgram body = VeilRenderSystem.renderer().getShaderManager().getShader(getBodyShader());
+        ShaderProgram body = VeilRenderSystem.renderer().getShaderManager().getShader(Identifier.of(DragonExperiments.MOD_ID, "body_textures"));
         if (body == null) {
             return false;
         }
         body.setSampler("PlanetTexture",textureId == -1 ? 0 : textureId);
         body.setSampler("UpperLayerTexture",upperLayerTexture == -1 ? 1 : upperLayerTexture);
-        body.setInt("useUpperLayer", upperLayerTexture == -1 ? 0 : 1);
-        body.setInt("useBaseLayer", textureId == -1 ? 0 : 1);
-        body.setVector("PlanetPos", InterpolationUtils.interpolateLinear(lastPosition.toVector3f(),currentPosition.toVector3f(),subtick));
-        body.setFloat("PlanetSize", (float) radius / PLANET_SCALE_DIVIDER);
-        body.setFloat("AtmosphereSize", atmosphereSize);
-        body.setFloat("PlanetRotationSpeed", (float) rotationTime);
-        body.setVector("AtmosphereRayleighCoeffiecents",atmosphereRayleighCoeffiecents.toVector3f().mul(1e-4f));
-        body.setFloat("AtmosphereMieCoeffiecent", atmosphereMieCoeffiecent * 1e-4f);
-        body.setFloat("AtmosphereBrightness", 1f);
-        body.setFloat("AtmosphereRayleighScaleHeight",atmosphereRayleighScaleHeight);
-        body.setFloat("AtmosphereMieScaleHeight",atmosphereMieScaleHeight);
+        pipeline.setInt("useUpperLayer", upperLayerTexture == -1 ? 0 : 1);
+        pipeline.setInt("useBaseLayer", textureId == -1 ? 0 : 1);
+        pipeline.setVector("PlanetPos", InterpolationUtils.interpolateLinear(lastPosition.toVector3f(),currentPosition.toVector3f(),subtick));
+        pipeline.setFloat("PlanetSize", (float) radius / PLANET_SCALE_DIVIDER);
+
         return true;
     }
 
@@ -180,8 +151,8 @@ public class CelestialBody {
         orbitingCelestialBodies.forEach((b) -> b.addBodiesRecursive(bodies));
     }
 
-    public Identifier getBodyShader() {
-        return Identifier.of(DragonExperiments.MOD_ID, "planet");
+    public Identifier getBodyPipeline() {
+        return Identifier.of(DragonExperiments.MOD_ID, "celestial_body");
     }
 
 

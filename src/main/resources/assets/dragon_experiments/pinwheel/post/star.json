@@ -12,7 +12,7 @@
     },
     {
       "type": "veil:blit",
-      "shader": "dragon_experiments:lit_atmosphere",
+      "shader": "dragon_experiments:star_atmosphere",
       "in": "swap",
       "out": "dragon_experiments:celestial"
     }

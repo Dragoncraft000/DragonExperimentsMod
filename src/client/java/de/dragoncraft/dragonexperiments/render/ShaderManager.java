@@ -57,11 +57,7 @@ public class ShaderManager {
             return;
         }
         PostPipeline backgroundPipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(SPACE_RENDER_PIPELINE);
-        PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(BODY_RENDER_PIPELINE);
         PostPipeline composePipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(COMPOSE_PIPELINE);
-        if (pipeline == null || backgroundPipeline == null) {
-            return;
-        }
         ShipComponent component = ModComponents.SHIP_COMPONENT.get( MinecraftClient.getInstance().player.getWorld());
 
         if (currentPos == null || currentRot == null) {
@@ -81,26 +77,20 @@ public class ShaderManager {
                         + MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false)) / interpolationTime;
         currentInterpolationTime = Math.min(currentInterpolationTime,1);
 
-
         currentPos = InterpolationUtils.interpolateLinear(currentPos,targetPos,currentInterpolationTime);
-        backgroundPipeline.setVector("ShipPos",currentPos.toVector3f());
-        pipeline.setVector("ShipPos",currentPos.toVector3f());
-
         currentRot =  new Quaternionf(currentRot).slerp(targetRot, currentInterpolationTime);
 
         Vector4f rot = new Vector4f(currentRot.x,currentRot.y,currentRot.z,currentRot.w);
-        pipeline.setVector("ShipRotation",rot);
-        pipeline.setVector("LightPosition",new Vector3f(0,10000000,0));
-        backgroundPipeline.setVector("ShipRotation",rot);
 
+        backgroundPipeline.setVector("ShipRotation",rot);
+        backgroundPipeline.setVector("ShipPos",currentPos.toVector3f());
         VeilRenderSystem.renderer().getPostProcessingManager().runPipeline(backgroundPipeline,false);
         List<CelestialBody> bodiesToRender = Universe.getAllBodies();
         float finalCurrentInterpolationTime = currentInterpolationTime;
-
         // CPU Render Sorting
         // Does not work well with larger planets and close distances
 
-/*        bodiesToRender.sort((c1,c2) -> {
+        bodiesToRender.sort((c1,c2) -> {
             double dist1 = c1.getCurrentPosition().subtract(currentPos).length();
             double dist2 = c2.getCurrentPosition().subtract(currentPos).length();
             if (dist1 == dist2) {
@@ -109,8 +99,12 @@ public class ShaderManager {
                 return -1;
             }
             return 1;
-        });*/
+        });
         bodiesToRender.forEach(celestialBody -> {
+            PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(celestialBody.getBodyPipeline());
+            pipeline.setVector("ShipPos",currentPos.toVector3f());
+            pipeline.setVector("ShipRotation",rot);
+            pipeline.setVector("LightPosition",new Vector3f(0,10000000,0));
             int textureId = -1;
             if (celestialBody.getTextureName() != null) {
                 TextureManager manager = MinecraftClient.getInstance().getTextureManager();

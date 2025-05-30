@@ -3,7 +3,7 @@
 #define jSteps 8
 
 
-vec2 rsi(vec3 r0, vec3 rd, float sr) {
+vec2 rayleigh_rsi(vec3 r0, vec3 rd, float sr) {
     // ray-sphere intersection that assumes
     // the sphere is centered at the origin.
     // No intersection when result.x > result.y
@@ -23,10 +23,10 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
     pSun = normalize(pSun);
     r = normalize(r);
     // Calculate the step size of the primary ray.
-    vec2 p = rsi(r0, r, rAtmos);
+    vec2 p = rayleigh_rsi(r0, r, rAtmos);
     if (p.y < 0.0) return vec3(0,0,0);
 
-    vec2 planetP = rsi(r0, r, rPlanet);
+    vec2 planetP = rayleigh_rsi(r0, r, rPlanet);
     p.y = min(p.y, planetP.x);
     float iStepSize = (p.y - p.x) / float(iSteps);
 
@@ -66,7 +66,7 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
         iOdMie += odStepMie;
 
         // Calculate the step size of the secondary ray.
-        vec2 lp = rsi(iPos, pSun, rAtmos);
+        vec2 lp = rayleigh_rsi(iPos, pSun, rAtmos);
 
 
         float jStepSize = lp.y / float(jSteps);

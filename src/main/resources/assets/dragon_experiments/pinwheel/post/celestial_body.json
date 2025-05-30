@@ -11,8 +11,7 @@
       "out": "swap"
     },
     {
-      "type": "veil:blit",
-      "shader": "dragon_experiments:lit_atmosphere",
+      "type": "veil:copy",
       "in": "swap",
       "out": "dragon_experiments:celestial"
     }
