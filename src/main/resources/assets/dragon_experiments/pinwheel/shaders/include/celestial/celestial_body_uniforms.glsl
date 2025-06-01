@@ -11,6 +11,7 @@ uniform float GameTime;
 vec3 LightPosition;
 uniform float SunBrightness = 22;
 uniform vec3 ShipPos = vec3(0,0,0);
+uniform vec3 ShipOrigin = vec3(0,0,0);
 uniform vec4 ShipRotation = vec4(0,0,0,0);
 
 // Planet Specific Uniforms

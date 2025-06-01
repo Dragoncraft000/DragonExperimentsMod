@@ -14,30 +14,36 @@ public class Planet extends CelestialBody {
     protected float atmosphereRayleighScaleHeight = 5;
     protected float atmosphereMieScaleHeight = 1.2f;
 
+    protected float atmosphereBrightness = 2f;
+
     public Planet(String bodyName) {
         super(bodyName);
     }
 
-    public Planet setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight, float mieCoeffiecent, float mieScaleHeight, float atmosphereSize) {
+    public Planet setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight, float mieCoeffiecent, float mieScaleHeight,float atmosphereBrightness, float atmosphereSize) {
         this.atmosphereRayleighCoeffiecents = rayleighCoeffiecents;
         this.atmosphereRayleighScaleHeight = rayleighScaleHeight;
         this.atmosphereMieCoeffiecent = mieCoeffiecent;
         this.atmosphereMieScaleHeight = mieScaleHeight;
         this.atmosphereSize = atmosphereSize;
+        this.atmosphereBrightness = atmosphereBrightness;
         return this;
     }
-    public Planet setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight, float mieCoeffiecent, float mieScaleHeight) {
+    public Planet setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight, float mieCoeffiecent, float mieScaleHeight,float atmosphereBrightness) {
         if (atmosphereSize == 0) {
             this.atmosphereSize = 50;
         }
-        return setAtmosphere(rayleighCoeffiecents,rayleighScaleHeight,mieCoeffiecent,mieScaleHeight,atmosphereSize);
+        return setAtmosphere(rayleighCoeffiecents,rayleighScaleHeight,mieCoeffiecent,mieScaleHeight,atmosphereBrightness,atmosphereSize);
     }
 
     public Planet setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight) {
-        return setAtmosphere(rayleighCoeffiecents,rayleighScaleHeight,1e-10f,1);
+        return setAtmosphere(rayleighCoeffiecents,rayleighScaleHeight,1e-10f,1,atmosphereBrightness);
     }
-    public Planet setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight,float atmosphereSize) {
-        return setAtmosphere(rayleighCoeffiecents,rayleighScaleHeight,1e-10f,1,atmosphereSize);
+    public Planet setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight,float atmosphereBrightness) {
+        return setAtmosphere(rayleighCoeffiecents,rayleighScaleHeight,1e-10f,1,atmosphereBrightness,atmosphereSize);
+    }
+    public Planet setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight,float atmosphereBrightness,float atmosphereSize) {
+        return setAtmosphere(rayleighCoeffiecents,rayleighScaleHeight,1e-10f,1,atmosphereBrightness,atmosphereSize);
     }
 
     public Planet disableAtmosphere() {
@@ -57,7 +63,7 @@ public class Planet extends CelestialBody {
         pipeline.setFloat("AtmosphereSize", atmosphereSize);
         pipeline.setVector("AtmosphereRayleighCoeffiecents",atmosphereRayleighCoeffiecents.toVector3f().mul(1e-4f));
         pipeline.setFloat("AtmosphereMieCoeffiecent", atmosphereMieCoeffiecent * 1e-4f);
-        pipeline.setFloat("AtmosphereBrightness", 1f);
+        pipeline.setFloat("AtmosphereBrightness", atmosphereBrightness);
         pipeline.setFloat("AtmosphereRayleighScaleHeight",atmosphereRayleighScaleHeight);
         pipeline.setFloat("AtmosphereMieScaleHeight",atmosphereMieScaleHeight);
         return true;

@@ -18,9 +18,11 @@ vec2 star_rsi(vec3 r0, vec3 rd, float sr) {
 float renderAtmosphere(vec3 r0,vec3 rd,float planetSize,float atmoSize,float scaleHeight) {
     int steps = 4;
     vec2 p = star_rsi(r0, rd, atmoSize);
-    if (p.y < 0.0) return 0;
 
     vec2 planetP = star_rsi(r0, rd, planetSize);
+    if (planetP.x < 0) {
+        planetP.x = p.y;
+    }
     p.y = min(p.y, planetP.x);
     float dist = (p.y - p.x);
     float stepSize = dist / float(steps);

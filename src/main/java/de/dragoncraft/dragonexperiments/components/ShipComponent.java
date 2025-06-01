@@ -12,6 +12,8 @@ public class ShipComponent implements ShipComponentInterface {
     private final World provider;
     private Vec3d shipPos = new Vec3d(13000, 0, 0);
 
+    private Vec3d shipOrigin = new Vec3d(0,0,0);
+
     private Quaternionf shipRotation = new Quaternionf();
     private Vec3d shipAngularVelocity = new Vec3d(0,0,0);
     private Vec3d shipVelocity = new Vec3d(0, 0, 0);
@@ -21,6 +23,10 @@ public class ShipComponent implements ShipComponentInterface {
 
     public void setShipPos(Vec3d shipPos) {
         this.shipPos = shipPos;
+        ModComponents.SHIP_COMPONENT.sync(this.provider);
+    }
+    public void setShipOrigin(Vec3d shipOrigin) {
+        this.shipOrigin = shipOrigin;
         ModComponents.SHIP_COMPONENT.sync(this.provider);
     }
 
@@ -33,6 +39,7 @@ public class ShipComponent implements ShipComponentInterface {
     @Override
     public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         this.shipPos = new Vec3d(tag.getDouble("posX"), tag.getDouble("posY"), tag.getDouble("posZ"));
+        this.shipOrigin = new Vec3d(tag.getDouble("originX"), tag.getDouble("originY"), tag.getDouble("originZ"));
         this.shipRotation = new Quaternionf(tag.getDouble("rotationX"), tag.getDouble("rotationY"), tag.getDouble("rotationZ"), tag.getDouble("rotationW"));
         this.shipVelocity = new Vec3d(tag.getDouble("velocityX"), tag.getDouble("velocityY"), tag.getDouble("velocityZ"));
         this.shipAngularVelocity = new Vec3d(tag.getDouble("angularVelocityX"), tag.getDouble("angularVelocityY"), tag.getDouble("angularVelocityZ"));
@@ -43,6 +50,10 @@ public class ShipComponent implements ShipComponentInterface {
         tag.putDouble("posX", this.shipPos.x);
         tag.putDouble("posY", this.shipPos.y);
         tag.putDouble("posZ", this.shipPos.z);
+
+        tag.putDouble("originX", this.shipOrigin.x);
+        tag.putDouble("originY", this.shipOrigin.y);
+        tag.putDouble("originZ", this.shipOrigin.z);
 
         tag.putDouble("rotationX", this.shipRotation.x);
         tag.putDouble("rotationY", this.shipRotation.y);
@@ -61,6 +72,11 @@ public class ShipComponent implements ShipComponentInterface {
     @Override
     public Vec3d getShipPosition() {
         return shipPos;
+    }
+
+    @Override
+    public Vec3d getShipOrigin() {
+        return shipOrigin;
     }
 
     @Override

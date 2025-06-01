@@ -22,9 +22,9 @@ void main() {
 
     vec3 rd = viewDirFromUv(texCoord);
     rd = rotateByQuaternion(rd,ShipRotation);
-    vec3 ro = rotateByQuaternion(VeilCamera.CameraPosition,ShipRotation) + ShipPos;
+    vec3 ro = rotateByQuaternion(VeilCamera.CameraPosition - ShipOrigin,ShipRotation) + ShipPos;
 
-    float t = raymarchPlanet(ro,rd,PlanetPos,PlanetSize);
+    vec2 planetHit = star_rsi(ro - PlanetPos,rd,PlanetSize);
     float sceneDist = length(ro + worldPos.rgb / worldPos.w);
 
     if (AtmosphereSize == 0) {
@@ -48,11 +48,12 @@ void main() {
     }
     float atmoT = (atmoHit.x);
     vec3 atmoP = ro + rd * atmoT;
-    if (atmoT > t) {
+    if (atmoT > planetHit.x) {
         return;
     }
+
     //vec3 color = vec3(0.5);
-    vec3 color = vec3(renderAtmosphere(atmoP - PlanetPos,rd,PlanetSize,atmoSize,1700 * 3) * .0001) * AtmosphereColor;
+    vec3 color = vec3(renderAtmosphere(atmoP - PlanetPos,rd,PlanetSize,atmoSize,sizeMod * 5) / (sizeMod * 10)) * AtmosphereColor;
     color = 1.0 - exp(-1.0 * color);
     fragColor.rgb = fragColor.rgb + color;
 }

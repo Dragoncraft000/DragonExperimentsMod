@@ -27,6 +27,9 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
     if (p.y < 0.0) return vec3(0,0,0);
 
     vec2 planetP = rayleigh_rsi(r0, r, rPlanet);
+    if (planetP.x < 0) {
+        planetP.x = p.y;
+    }
     p.y = min(p.y, planetP.x);
     float iStepSize = (p.y - p.x) / float(iSteps);
 

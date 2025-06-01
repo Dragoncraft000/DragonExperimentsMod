@@ -4,7 +4,6 @@ import de.dragoncraft.dragonexperiments.DragonExperiments;
 import de.dragoncraft.dragonexperiments.components.ModComponents;
 import de.dragoncraft.dragonexperiments.components.ShipComponent;
 import de.dragoncraft.dragonexperiments.solarsystem.CelestialBody;
-import de.dragoncraft.dragonexperiments.solarsystem.Universe;
 import de.dragoncraft.dragonexperiments.utils.InterpolationUtils;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.post.PostPipeline;
@@ -83,9 +82,8 @@ public class ShaderManager {
         Vector4f rot = new Vector4f(currentRot.x,currentRot.y,currentRot.z,currentRot.w);
 
         backgroundPipeline.setVector("ShipRotation",rot);
-        backgroundPipeline.setVector("ShipPos",currentPos.toVector3f());
         VeilRenderSystem.renderer().getPostProcessingManager().runPipeline(backgroundPipeline,false);
-        List<CelestialBody> bodiesToRender = Universe.getAllBodies();
+        List<CelestialBody> bodiesToRender = DragonExperiments.universe.getAllBodies();
         float finalCurrentInterpolationTime = currentInterpolationTime;
         // CPU Render Sorting
         // Does not work well with larger planets and close distances
@@ -102,6 +100,7 @@ public class ShaderManager {
         });
         bodiesToRender.forEach(celestialBody -> {
             PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(celestialBody.getBodyPipeline());
+            pipeline.setVector("ShipOrigin",component.getShipOrigin().toVector3f());
             pipeline.setVector("ShipPos",currentPos.toVector3f());
             pipeline.setVector("ShipRotation",rot);
             pipeline.setVector("LightPosition",new Vector3f(0,10000000,0));

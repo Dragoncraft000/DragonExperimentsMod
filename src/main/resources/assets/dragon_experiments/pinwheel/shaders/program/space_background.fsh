@@ -14,16 +14,13 @@ void main() {
     vec4 baseColor = texture(DiffuseSampler0, texCoord);
     float depthSample = texture(DiffuseDepthSampler, texCoord).r;
     vec4 pos = screenToLocalSpace(texCoord, depthSample);
-
+    gl_FragDepth = depthSample;
     vec3 rd = normalize(pos.xyz);
     rd = rotateByQuaternion(rd,ShipRotation);
     if (depthSample < 1) {
-
         fragColor = baseColor;
-        gl_FragDepth = depthSample;
         return;
     }
-    gl_FragDepth = 1;
     vec2 planetTexCoord = normalToSpherical(rd);
     fragColor = texture(BackgroundTexture, planetTexCoord);
 }

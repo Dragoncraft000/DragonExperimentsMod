@@ -57,7 +57,7 @@ public class CelestialBody {
 
 
 
-    public CelestialBody addOribitingPlanet(CelestialBody celestialBody) {
+    public CelestialBody addOrbitingBody(CelestialBody celestialBody) {
         if (orbitingCelestialBodies.contains(celestialBody)) {
             return this;
         }

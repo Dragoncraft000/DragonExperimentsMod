@@ -59,8 +59,8 @@ public class SeatEntity extends Entity  {
             component.brakeShip();
             return;
         }
-        component.accelerateLocal(steering.mul(200));
-
+        component.accelerateLocal(steering.mul(1));
+        component.setShipOrigin(player.getPos());
     }
 
 }

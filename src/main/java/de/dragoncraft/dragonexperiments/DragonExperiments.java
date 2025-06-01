@@ -7,6 +7,7 @@ import de.dragoncraft.dragonexperiments.item.ModItems;
 import de.dragoncraft.dragonexperiments.networking.ship.SeatInputPayload;
 import de.dragoncraft.dragonexperiments.networking.ship.SeatInputReciever;
 import de.dragoncraft.dragonexperiments.solarsystem.Universe;
+import de.dragoncraft.dragonexperiments.solarsystem.UniversePresets;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -21,6 +22,8 @@ public class DragonExperiments implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	public static Universe universe;
+
 	@Override
 	public void onInitialize() {
 
@@ -32,7 +35,7 @@ public class DragonExperiments implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(SeatInputPayload.ID, SeatInputPayload.CODEC);
 		SeatInputReciever.initialize();
 
-		Universe.initialize();
-		ServerTickEvents.START_SERVER_TICK.register((id) -> Universe.tickBodies());
+		universe = UniversePresets.SMALL_SOLAR_SYSTEM;
+		ServerTickEvents.START_SERVER_TICK.register((id) -> universe.tickBodies());
 	}
 }

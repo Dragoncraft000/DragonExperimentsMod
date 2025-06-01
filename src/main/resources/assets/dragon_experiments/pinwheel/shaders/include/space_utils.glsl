@@ -3,7 +3,7 @@
 #veil:buffer veil:camera VeilCamera
 
 const int MAX_STEPS = 400;
-const float MAX_DISTANCE = 1000000000;
+const float MAX_DISTANCE = 1000000;
 const float HIT_DISTANCE = 0.01;
 
 vec2 rsi(vec3 r0, vec3 rd, float sr) {
