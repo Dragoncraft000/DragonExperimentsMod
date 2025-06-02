@@ -2,9 +2,11 @@ package de.dragoncraft.dragonexperiments.solarsystem;
 
 import de.dragoncraft.dragonexperiments.DragonExperiments;
 import foundry.veil.api.client.render.post.PostPipeline;
+import lombok.Getter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
+@Getter
 public class Planet extends CelestialBody {
 
     protected float atmosphereSize = 50;
@@ -48,25 +50,6 @@ public class Planet extends CelestialBody {
 
     public Planet disableAtmosphere() {
         return setAtmosphere(new Vec3d(0,0,0),0,0,0,0);
-    }
-
-    @Override
-    public Identifier getBodyPipeline() {
-        return Identifier.of(DragonExperiments.MOD_ID, "planet");
-    }
-
-    @Override
-    public boolean renderBody(PostPipeline pipeline, int textureId, int upperLayerTexture, float subtick) {
-        if (!super.renderBody(pipeline,textureId,upperLayerTexture,subtick)) {
-            return false;
-        }
-        pipeline.setFloat("AtmosphereSize", atmosphereSize);
-        pipeline.setVector("AtmosphereRayleighCoeffiecents",atmosphereRayleighCoeffiecents.toVector3f().mul(1e-4f));
-        pipeline.setFloat("AtmosphereMieCoeffiecent", atmosphereMieCoeffiecent * 1e-4f);
-        pipeline.setFloat("AtmosphereBrightness", atmosphereBrightness);
-        pipeline.setFloat("AtmosphereRayleighScaleHeight",atmosphereRayleighScaleHeight);
-        pipeline.setFloat("AtmosphereMieScaleHeight",atmosphereMieScaleHeight);
-        return true;
     }
 
 }

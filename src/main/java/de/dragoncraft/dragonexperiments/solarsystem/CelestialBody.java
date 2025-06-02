@@ -1,10 +1,6 @@
 package de.dragoncraft.dragonexperiments.solarsystem;
 
 import de.dragoncraft.dragonexperiments.DragonExperiments;
-import de.dragoncraft.dragonexperiments.utils.InterpolationUtils;
-import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.post.PostPipeline;
-import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.util.Identifier;
@@ -15,16 +11,18 @@ import java.util.List;
 
 public class CelestialBody {
 
-    public static int PLANET_DISTANCE_DIVIDER = 1;
-    public static int PLANET_SCALE_DIVIDER = 1;
-
     public static int MAX_RECURSION_LEVELS = 10;
 
+    @Getter
     private final String bodyName;
     @Getter
     private Identifier textureName;
     @Getter
     private Identifier upperLayerTextureName;
+    @Getter
+    private int texturId;
+    @Getter
+    private int upperLayerTextureId;
 
     @Setter
     protected boolean rendered;
@@ -33,7 +31,7 @@ public class CelestialBody {
 
     protected int orbitDistance = 10000;
     protected double orbitTime = 10;
-
+    @Getter
     protected int radius;
     protected double rotationTime;
 
@@ -48,6 +46,9 @@ public class CelestialBody {
 
     @Getter
     protected float currentRotation = 0;
+    @Getter @Setter
+    protected Vec3d lastRenderedPosition = new Vec3d(0,0,0);
+
 
 
     public CelestialBody(String bodyName) {
@@ -71,19 +72,19 @@ public class CelestialBody {
         return this;
     }
 
-    public CelestialBody setRenderDetails(int radius,int rotationTime,Identifier texture) {
+    public CelestialBody setRenderDetails(int radius,int rotationTime,int texture) {
         this.rendered = true;
         this.radius = radius;
         this.rotationTime = rotationTime;
-        this.textureName = texture;
+        this.texturId = texture;
         return this;
     }
-    public CelestialBody setRenderDetails(int radius,int rotationTime,Identifier texture,Identifier upperLayerTextureName) {
+    public CelestialBody setRenderDetails(int radius,int rotationTime,int texture,int upperLayerTextureName) {
         this.rendered = true;
         this.radius = radius;
         this.rotationTime = rotationTime;
-        this.textureName = texture;
-        this.upperLayerTextureName = upperLayerTextureName;
+        this.texturId = texture;
+        this.upperLayerTextureId = upperLayerTextureName;
         return this;
     }
 
@@ -99,49 +100,25 @@ public class CelestialBody {
         currentPosition = currentPosition.add(parent.currentPosition);
     }
 
-    public void tickPosition() {
-        tickPosition(1);
+    public void tickPosition(long universeTime) {
+        tickPosition(1,universeTime);
     }
 
-    public void tickPosition(int recursions) {
+    public void tickPosition(int recursions,long universeTime) {
         if (recursions > MAX_RECURSION_LEVELS) {
             return;
         }
         lastPosition = new Vec3d(currentPosition.x,currentPosition.y,currentPosition.z);
         if (!staticPosition) {
-            currentOrbitAngle += (1 / orbitTime) / 24000;
-            if (currentOrbitAngle > 360) {
-                currentOrbitAngle -= 360;
-            }
+            currentOrbitAngle = universeTime * (360 / (orbitTime * 24000)) % 360;
             double radians = Math.toRadians(currentOrbitAngle);
-            currentPosition = new Vec3d(Math.sin(radians) * orbitDistance  / PLANET_DISTANCE_DIVIDER,0,Math.cos(radians) * orbitDistance / PLANET_DISTANCE_DIVIDER);
+            currentPosition = new Vec3d(Math.sin(radians) * orbitDistance,0,Math.cos(radians) * orbitDistance);
         }
         orbitingCelestialBodies.forEach((celestialBody -> {
-            celestialBody.tickPosition(recursions +1);
+            celestialBody.tickPosition(recursions +1,universeTime);
             celestialBody.addReferenceFrame(this);
         }));
     }
-
-    public boolean renderBody(PostPipeline pipeline,int textureId,int upperLayerTexture,float subtick) {
-        if (!rendered) {
-            return false;
-        }
-        ShaderProgram body = VeilRenderSystem.renderer().getShaderManager().getShader(Identifier.of(DragonExperiments.MOD_ID, "body_textures"));
-        if (body == null) {
-            return false;
-        }
-        body.setSampler("PlanetTexture",textureId == -1 ? 0 : textureId);
-        body.setSampler("UpperLayerTexture",upperLayerTexture == -1 ? 1 : upperLayerTexture);
-        pipeline.setInt("useUpperLayer", upperLayerTexture == -1 ? 0 : 1);
-        pipeline.setInt("useBaseLayer", textureId == -1 ? 0 : 1);
-        pipeline.setVector("PlanetPos", InterpolationUtils.interpolateLinear(lastPosition.toVector3f(),currentPosition.toVector3f(),subtick));
-        pipeline.setFloat("PlanetSize", (float) radius / PLANET_SCALE_DIVIDER);
-
-        return true;
-    }
-
-
-
 
     public void addBodiesRecursive(List<CelestialBody> bodies) {
         bodies.add(this);
@@ -150,10 +127,4 @@ public class CelestialBody {
         }
         orbitingCelestialBodies.forEach((b) -> b.addBodiesRecursive(bodies));
     }
-
-    public Identifier getBodyPipeline() {
-        return Identifier.of(DragonExperiments.MOD_ID, "celestial_body");
-    }
-
-
 }

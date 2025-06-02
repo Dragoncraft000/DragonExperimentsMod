@@ -2,6 +2,7 @@ package de.dragoncraft.dragonexperiments.entity;
 
 import de.dragoncraft.dragonexperiments.components.ModComponents;
 import de.dragoncraft.dragonexperiments.components.ShipComponent;
+import de.dragoncraft.dragonexperiments.gamerules.ModGamerules;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -52,14 +53,14 @@ public class SeatEntity extends Entity  {
         }
     }
     public void handlePlayerSteer(PlayerEntity player, Vector3f move, Vector3f steering) {
-        ShipComponent component = ModComponents.SHIP_COMPONENT.get( player.getWorld());
-        component.addAngularMomentum(move.mul(0.002f));
 
+        ShipComponent component = ModComponents.SHIP_COMPONENT.get( player.getWorld());
+        component.addAngularMomentum(move.mul(player.getWorld().getGameRules().getInt(ModGamerules.SHIP_ROTATION_SENSITIVITY) * 1e-5f));
         if (steering.y == -100) {
-            component.brakeShip();
+            component.brakeShip(player.getWorld().getGameRules().getInt(ModGamerules.SHIP_BRAKE) * 0.05e-3f);
             return;
         }
-        component.accelerateLocal(steering.mul(1));
+        component.accelerateLocal(steering.mul(player.getWorld().getGameRules().getInt(ModGamerules.SHIP_ACCELERATION) * 0.05e-3f));
         component.setShipOrigin(player.getPos());
     }
 

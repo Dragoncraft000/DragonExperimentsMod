@@ -1,19 +1,12 @@
 package de.dragoncraft.dragonexperiments.item;
 
-import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.CowEntity;
-import net.minecraft.entity.passive.LlamaEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
-import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.explosion.ExplosionBehavior;
 
 import java.util.List;
 
@@ -33,11 +26,8 @@ public class TestItem extends Item {
         if (world.isClient) {
             return false;
         }
-        BlockPos frontOfPlayer = target.getBlockPos();
-        TntEntity tntEntity = new TntEntity(EntityType.TNT,target.getWorld());
-        tntEntity.setPosition(frontOfPlayer.toCenterPos());
-        tntEntity.setFuse(-1);
-        world.spawnEntity(tntEntity);
+        target.velocityModified = true;
+        target.setVelocity(0,1,0);
         return false;
     }
 }

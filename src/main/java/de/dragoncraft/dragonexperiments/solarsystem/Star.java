@@ -1,10 +1,9 @@
 package de.dragoncraft.dragonexperiments.solarsystem;
 
-import de.dragoncraft.dragonexperiments.DragonExperiments;
-import foundry.veil.api.client.render.post.PostPipeline;
-import net.minecraft.util.Identifier;
+import lombok.Getter;
 import net.minecraft.util.math.Vec3d;
 
+@Getter
 public class Star extends CelestialBody {
 
     public static Vec3d[] temperatureColors = new Vec3d[]{
@@ -33,23 +32,5 @@ public class Star extends CelestialBody {
         this.atmosphereSize = size;
         this.atmosphereFalloff = falloff;
         return this;
-    }
-
-    @Override
-    public Identifier getBodyPipeline() {
-        return Identifier.of(DragonExperiments.MOD_ID, "star");
-    }
-
-
-    @Override
-    public boolean renderBody(PostPipeline pipeline, int textureId, int upperLayerTexture, float subtick) {
-        if (!super.renderBody(pipeline,textureId,upperLayerTexture,subtick)) {
-            return false;
-        }
-        pipeline.setFloat("AtmosphereSize", atmosphereSize);
-        pipeline.setFloat("AtmosphereBrightness",atmosphereBrightness);
-        pipeline.setVector("AtmosphereColor", color.toVector3f());
-        pipeline.setFloat("AtmosphereFalloff", atmosphereFalloff);
-        return true;
     }
 }

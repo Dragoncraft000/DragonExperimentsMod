@@ -48,12 +48,9 @@ void main() {
     }
     float atmoT = (atmoHit.x);
     vec3 atmoP = ro + rd * atmoT;
-    if (atmoT > planetHit.x) {
-        return;
-    }
 
     //vec3 color = vec3(0.5);
-    vec3 color = vec3(renderAtmosphere(atmoP - PlanetPos,rd,PlanetSize,atmoSize,sizeMod * 5) / (sizeMod * 10)) * AtmosphereColor;
+    vec3 color = vec3(renderAtmosphere(atmoP - PlanetPos,rd,PlanetSize,atmoSize,sizeMod * 5) / (sizeMod * 10)) * AtmosphereColor * AtmosphereBrightness;
     color = 1.0 - exp(-1.0 * color);
     fragColor.rgb = fragColor.rgb + color;
 }

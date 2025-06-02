@@ -9,6 +9,23 @@
       "shader": "dragon_experiments:space_background",
       "in": "minecraft:main",
       "out": "dragon_experiments:celestial"
+    },
+    {
+      "type": "veil:blit",
+      "shader": "dragon_experiments:celestial_body",
+      "in": "dragon_experiments:celestial",
+      "out": "swap"
+    },
+    {
+      "type": "veil:copy",
+      "in": "swap",
+      "out": "veil:post"
     }
-  ]
+  ],
+  "framebuffers": {
+    "swap": {
+      "depth": true,
+      "format": "RGBA16F"
+    }
+  }
 }

@@ -119,8 +119,8 @@ public class ShipComponent implements ShipComponentInterface {
         setShipVelocity(getShipVelocity().add(new Vec3d(steering.x,steering.y,steering.z)));
     }
 
-    public void brakeShip() {
-        setShipVelocity(getShipVelocity().normalize().multiply(Math.max(0,getShipVelocity().length() - 100000)));
+    public void brakeShip(double brakeSpeed) {
+        setShipVelocity(getShipVelocity().normalize().multiply(Math.max(0,getShipVelocity().length() - brakeSpeed)));
     }
     @Override
     public void serverTick() {

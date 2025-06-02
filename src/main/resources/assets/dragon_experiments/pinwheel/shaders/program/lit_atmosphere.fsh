@@ -68,7 +68,7 @@ void main() {
         AtmosphereMieScaleHeight * sizeMod,                          // Mie scale height
         0.758                           // Mie preferred scattering direction
     ) * AtmosphereBrightness;
-
+    color = max(color,vec3(0));
     color = 1.0 - exp(-1.0 * color);
     fragColor.rgb = fragColor.rgb + color;
     //fragColor.rgb = vec3(getPlanetAtmoDistance(atmoP,PlanetPos,PlanetSize,7));

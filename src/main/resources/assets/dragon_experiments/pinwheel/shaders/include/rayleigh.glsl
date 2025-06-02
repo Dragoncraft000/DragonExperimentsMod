@@ -20,6 +20,9 @@ vec2 rayleigh_rsi(vec3 r0, vec3 rd, float sr) {
 
 vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAtmos, vec3 kRlh, float kMie, float shRlh, float shMie, float g) {
     // Normalize the sun and view directions.
+    if (length(pSun) < rPlanet) {
+        pSun = r0;
+    }
     pSun = normalize(pSun);
     r = normalize(r);
     // Calculate the step size of the primary ray.
