@@ -1,15 +1,4 @@
 {
   "vertex": "veil:blit_screen",
-  "fragment": "dragon_experiments:celestial_body",
-  "textures": {
-    "SunTexture": "dragon_experiments:textures/shader/planet/sun.png",
-    "EarthTexture": "dragon_experiments:textures/shader/planet/earth.png",
-    "EarthClouds": "dragon_experiments:textures/shader/planet/clouds.png",
-    "MoonTexture": "dragon_experiments:textures/shader/planet/moon.png",
-    "MercuryTexture": "dragon_experiments:textures/shader/planet/mercury.png",
-    "VenusTexture": "dragon_experiments:textures/shader/planet/venus.png",
-    "VenusClouds": "dragon_experiments:textures/shader/planet/venus_clouds.png",
-    "MarsTexture": "dragon_experiments:textures/shader/planet/mars.png",
-    "JupiterTexture": "dragon_experiments:textures/shader/planet/jupiter.png"
-  }
+  "fragment": "dragon_experiments:celestial_body"
 }

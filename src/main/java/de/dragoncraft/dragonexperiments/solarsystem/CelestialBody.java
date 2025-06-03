@@ -1,6 +1,5 @@
 package de.dragoncraft.dragonexperiments.solarsystem;
 
-import de.dragoncraft.dragonexperiments.DragonExperiments;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.util.Identifier;
@@ -19,10 +18,6 @@ public class CelestialBody {
     private Identifier textureName;
     @Getter
     private Identifier upperLayerTextureName;
-    @Getter
-    private int texturId;
-    @Getter
-    private int upperLayerTextureId;
 
     @Setter
     protected boolean rendered;
@@ -72,19 +67,19 @@ public class CelestialBody {
         return this;
     }
 
-    public CelestialBody setRenderDetails(int radius,int rotationTime,int texture) {
+    public CelestialBody setRenderDetails(int radius,int rotationTime,Identifier texture) {
         this.rendered = true;
         this.radius = radius;
         this.rotationTime = rotationTime;
-        this.texturId = texture;
+        this.textureName = texture;
         return this;
     }
-    public CelestialBody setRenderDetails(int radius,int rotationTime,int texture,int upperLayerTextureName) {
+    public CelestialBody setRenderDetails(int radius,int rotationTime,Identifier texture,Identifier upperLayerTextureName) {
         this.rendered = true;
         this.radius = radius;
         this.rotationTime = rotationTime;
-        this.texturId = texture;
-        this.upperLayerTextureId = upperLayerTextureName;
+        this.textureName = texture;
+        this.upperLayerTextureName = upperLayerTextureName;
         return this;
     }
 

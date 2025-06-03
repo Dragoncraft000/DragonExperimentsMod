@@ -5,45 +5,11 @@
 
 #include dragon_experiments:celestial/celestial_body_uniforms
 
-uniform sampler2D SunTexture;
-uniform sampler2D EarthTexture;
-uniform sampler2D EarthClouds;
-uniform sampler2D MoonTexture;
-uniform sampler2D MercuryTexture;
-uniform sampler2D VenusTexture;
-uniform sampler2D VenusClouds;
-uniform sampler2D MarsTexture;
-uniform sampler2D JupiterTexture;
 
 in vec2 texCoord;
 
 uniform float defaultScaleSize = 127.;
 out vec4 fragColor;
-
-vec4 getSamplerById(int texturedId,vec2 texCoord) {
-    switch (texturedId) {
-        case 1:
-            return texture(SunTexture,texCoord);
-        case 2:
-            return texture(EarthTexture,texCoord);
-        case 3:
-            return texture(EarthClouds,texCoord);
-        case 4:
-            return texture(MoonTexture,texCoord);
-        case 5:
-            return texture(MercuryTexture,texCoord);
-        case 6:
-            return texture(VenusTexture,texCoord);
-        case 7:
-            return texture(VenusClouds,texCoord);
-        case 8:
-            return texture(MarsTexture,texCoord);
-        case 9:
-            return texture(JupiterTexture,texCoord);
-        default:
-            return vec4(1);
-    }
-}
 
 
 void main() {
@@ -85,11 +51,11 @@ void main() {
             vec2 planetTexCoord = normalToSpherical(texDir);
             vec4 clouds = vec4(0);
             vec4 albedo = vec4(0);
-            albedo = getSamplerById(PlanetTextures[i], planetTexCoord + vec2(GameTime * 1,0));
+            albedo = texture(PlanetTexturesSampler, vec3(planetTexCoord + vec2(GameTime * 1,0),PlanetTextures[i]));
 
             int t = UpperLayerTextures[i];
             if (t != 0) {
-                clouds = getSamplerById(UpperLayerTextures[i], planetTexCoord + vec2(GameTime * 1,0));
+               clouds = texture(PlanetTexturesSampler, vec3(planetTexCoord + vec2(GameTime * 1,0), UpperLayerTextures[i]));
             }
             fragColor = vec4(mix((albedo.rgb * diffLight),(clouds.rgb * diffLight),clouds.r * 0.9),1);
             //fragColor = vec4(((albedo.rgb * diffLight) + (clouds.rgb * 0.3 * diffLight)),1);

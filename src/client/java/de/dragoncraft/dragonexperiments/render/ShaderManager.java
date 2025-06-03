@@ -9,6 +9,7 @@ import de.dragoncraft.dragonexperiments.solarsystem.Star;
 import de.dragoncraft.dragonexperiments.utils.InterpolationUtils;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.post.PostPipeline;
+import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
@@ -25,6 +26,7 @@ public class ShaderManager {
 
     private static final Identifier SPACE_WORLD = Identifier.of(MOD_ID, "space");
     private static final Identifier SPACE_RENDER_PIPELINE = Identifier.of(MOD_ID, "space_shader");
+    private static final Identifier CELESTIAL_BODY_SHADER = Identifier.of(MOD_ID, "celestial_body");
 
     private static boolean registered = false;
 
@@ -34,6 +36,8 @@ public class ShaderManager {
 
     private static Quaternionf currentRot;
     private static Quaternionf targetRot;
+
+    private static int lastUniverseHash = 0;
 
     public static void initialize() {
 
@@ -86,6 +90,17 @@ public class ShaderManager {
             }
             return 1;
         });
+
+        if (DragonExperiments.universe != null && DragonExperiments.universe.getHash() != lastUniverseHash) {
+            PlanetTextureLoader.loadTextures(DragonExperiments.universe.getAllTextures(),4096,2048,true);
+
+            lastUniverseHash = DragonExperiments.universe.getHash();
+        }
+
+        if (!PlanetTextureLoader.texturesLoaded) {
+            return;
+        }
+
         ShipComponent component = ModComponents.SHIP_COMPONENT.get( MinecraftClient.getInstance().player.getWorld());
         PlanetsUniformContainer container = new PlanetsUniformContainer(100);
         PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(SPACE_RENDER_PIPELINE);
@@ -115,12 +130,18 @@ public class ShaderManager {
         pipeline.setInts("PlanetTextures",container.planetTextureIds);
         pipeline.setInts("UpperLayerTextures",container.upperLayerTextureIds);
 
+        ShaderProgram program = VeilRenderSystem.renderer().getShaderManager().getShader(CELESTIAL_BODY_SHADER);
+        if (program == null) {
+            return;
+        }
+        program.setSampler("PlanetTexturesSampler",PlanetTextureLoader.getTextureArrayId());
+
         VeilRenderSystem.renderer().getPostProcessingManager().runPipeline(pipeline,true);
     }
 
     private static void addPlanetRenderingData(CelestialBody celestialBody,PlanetsUniformContainer container,int id) {
-        container.planetTextureIds[id] = celestialBody.getTexturId();
-        container.upperLayerTextureIds[id] = celestialBody.getUpperLayerTextureId();
+       container.planetTextureIds[id] = PlanetTextureLoader.getLayerIndex(celestialBody.getTextureName());
+       container.upperLayerTextureIds[id] = PlanetTextureLoader.getLayerIndex(celestialBody.getUpperLayerTextureName());
         if (container.planetTextureIds[id] == -1) {
             container.useTexture[id] = 0;
             container.planetTextureIds[id] = 0;
@@ -160,6 +181,7 @@ public class ShaderManager {
             manager.bindTexture(textureName);
             textureId = manager.getTexture(textureName).getGlId();
         }
+
         return textureId;
     }
 

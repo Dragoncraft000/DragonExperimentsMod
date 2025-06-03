@@ -1,6 +1,7 @@
 package de.dragoncraft.dragonexperiments.solarsystem;
 
 import lombok.Getter;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -8,6 +9,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class Universe {
+
+
+    @Getter
+    private int hash = 1;
 
     @Getter
     private World physicalWorld;
@@ -20,6 +25,7 @@ public class Universe {
 
     public void reconstruct(Universe newUniverse) {
         celestialBodies = newUniverse.celestialBodies;
+        hash++;
     }
 
     public Universe addBody(CelestialBody body) {
@@ -51,6 +57,20 @@ public class Universe {
             }
         }
         return null;
+    }
+
+    public List<Identifier> getAllTextures() {
+        List<CelestialBody> bodies = getAllBodies();
+        List<Identifier> textures = new ArrayList<>();
+        for (CelestialBody body : bodies) {
+            if (body.getTextureName() != null && !textures.contains(body.getTextureName())) {
+                textures.add(body.getTextureName());
+            }
+            if (body.getUpperLayerTextureName() != null && !textures.contains(body.getUpperLayerTextureName())) {
+                textures.add(body.getUpperLayerTextureName());
+            }
+        }
+        return textures;
     }
 
 
