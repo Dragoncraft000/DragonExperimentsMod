@@ -11,7 +11,6 @@ import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.post.PostPipeline;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
@@ -45,6 +44,9 @@ public class ShaderManager {
 
 
     private static void updateShipPosition() {
+        if (MinecraftClient.getInstance().player == null) {
+            return;
+        }
         ShipComponent component = ModComponents.SHIP_COMPONENT.get( MinecraftClient.getInstance().player.getWorld());
 
         if (currentPos == null || currentRot == null) {
@@ -56,8 +58,10 @@ public class ShaderManager {
             targetPos = component.getShipPosition();
         }
 
-        currentPos = InterpolationUtils.interpolateLinear(currentPos,targetPos,0.05f);
-        currentRot =  new Quaternionf(currentRot).slerp(targetRot, 0.05f);
+        float time = MinecraftClient.getInstance().getRenderTickCounter().getLastFrameDuration() * 5;
+
+        currentPos = InterpolationUtils.interpolateLinear(currentPos,targetPos,time * 0.05f);
+        currentRot =  new Quaternionf(currentRot).slerp(targetRot, time * 0.05f);
     }
 
     public static void updateSpaceShader() {
@@ -93,17 +97,17 @@ public class ShaderManager {
 
         if (DragonExperiments.universe != null && DragonExperiments.universe.getHash() != lastUniverseHash) {
             PlanetTextureLoader.loadTextures(DragonExperiments.universe.getAllTextures(),4096,2048,true);
-
             lastUniverseHash = DragonExperiments.universe.getHash();
         }
 
-        if (!PlanetTextureLoader.texturesLoaded) {
-            return;
-        }
+
 
         ShipComponent component = ModComponents.SHIP_COMPONENT.get( MinecraftClient.getInstance().player.getWorld());
         PlanetsUniformContainer container = new PlanetsUniformContainer(100);
         PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(SPACE_RENDER_PIPELINE);
+        if (pipeline == null) {
+            return;
+        }
         pipeline.setVector("ShipOrigin",component.getShipOrigin().toVector3f());
         pipeline.setVector("ShipPos",currentPos.toVector3f());
         pipeline.setVector("ShipRotation",rot);
@@ -140,8 +144,8 @@ public class ShaderManager {
     }
 
     private static void addPlanetRenderingData(CelestialBody celestialBody,PlanetsUniformContainer container,int id) {
-       container.planetTextureIds[id] = PlanetTextureLoader.getLayerIndex(celestialBody.getTextureName());
-       container.upperLayerTextureIds[id] = PlanetTextureLoader.getLayerIndex(celestialBody.getUpperLayerTextureName());
+        container.planetTextureIds[id] = PlanetTextureLoader.getLayerIndex(celestialBody.getTextureName());
+        container.upperLayerTextureIds[id] = PlanetTextureLoader.getLayerIndex(celestialBody.getUpperLayerTextureName());
         if (container.planetTextureIds[id] == -1) {
             container.useTexture[id] = 0;
             container.planetTextureIds[id] = 0;
@@ -150,10 +154,10 @@ public class ShaderManager {
             container.useUpperLayer[id] = 0;
             container.upperLayerTextureIds[id] = 0;
         }
-        Vec3d newPos = InterpolationUtils.interpolateLinear(celestialBody.getLastRenderedPosition(),celestialBody.getCurrentPosition(),0.01f);
+        Vec3d newPos = InterpolationUtils.interpolateLinear(celestialBody.getLastRenderedPosition(), celestialBody.getCurrentPosition(), 0.01f);
         celestialBody.setLastRenderedPosition(newPos);
         container.planetPositions[id] = newPos.toVector3f();
-        container.planetSizes[id] =celestialBody.getRadius();
+        container.planetSizes[id] = celestialBody.getRadius();
 
         if (celestialBody instanceof Planet planet) {
             container.atmosphereTypes[id] = 1;
@@ -172,18 +176,4 @@ public class ShaderManager {
             container.atmosphereRayleighScaleHeight[id] = star.getAtmosphereFalloff();
         }
     }
-
-
-    private static int getTextureId(Identifier textureName) {
-        int textureId = -1;
-        if (textureName != null) {
-            TextureManager manager = MinecraftClient.getInstance().getTextureManager();
-            manager.bindTexture(textureName);
-            textureId = manager.getTexture(textureName).getGlId();
-        }
-
-        return textureId;
-    }
-
-
 }
