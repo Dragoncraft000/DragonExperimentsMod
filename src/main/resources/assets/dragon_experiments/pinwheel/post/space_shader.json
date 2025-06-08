@@ -19,7 +19,8 @@
     {
       "type": "veil:copy",
       "in": "swap",
-      "out": "veil:post"
+      "out": "veil:post",
+      "depth": true
     }
   ],
   "framebuffers": {

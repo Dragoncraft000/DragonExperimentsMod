@@ -2,11 +2,10 @@ package de.dragoncraft.dragonexperiments.solarsystem;
 
 import lombok.Getter;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Universe {
 
@@ -18,6 +17,8 @@ public class Universe {
     private World physicalWorld;
     private List<CelestialBody> celestialBodies = new ArrayList<>();
 
+    private final Map<String,CelestialBody> cachedBodyNames = new HashMap<>();
+
     public Universe() {}
     public Universe(World physicalWorld) {
         this.physicalWorld = physicalWorld;
@@ -25,13 +26,22 @@ public class Universe {
 
     public void reconstruct(Universe newUniverse) {
         celestialBodies = newUniverse.celestialBodies;
+        updateBodyNames();
         hash++;
+        earth = getCelestialBody("earth");
     }
 
     public Universe addBody(CelestialBody body) {
         celestialBodies.add(body);
+        updateBodyNames();
         return this;
     }
+
+    @Getter
+    private CelestialBody earth;
+
+
+
 
     public void tickUniverse() {
         if (physicalWorld == null) {
@@ -48,6 +58,20 @@ public class Universe {
         celestialBodies.forEach(celestialBody -> celestialBody.addBodiesRecursive(bodies));
         return bodies;
     }
+    public CelestialBody getNearestBody(Vec3d current) {
+        List<CelestialBody> sorted = getAllBodies();
+        sorted.sort(Comparator.comparingDouble(c -> c.getCurrentPosition().squaredDistanceTo(new Vec3d(current.x,current.y,current.z))));
+        return sorted.getFirst();
+    }
+
+    private void updateBodyNames() {
+        cachedBodyNames.clear();
+        getAllBodies().forEach((c) -> cachedBodyNames.put(c.getBodyName(),c));
+    }
+
+    public CelestialBody getCachedCelestialBody(String name) {
+        return cachedBodyNames.get(name);
+    }
 
     public CelestialBody getCelestialBody(String name) {
         List<CelestialBody> bodies = getAllBodies();
@@ -57,6 +81,9 @@ public class Universe {
             }
         }
         return null;
+    }
+    public String[] getAllBodyNames() {
+        return cachedBodyNames.keySet().toArray(new String[0]);
     }
 
     public List<Identifier> getAllTextures() {
@@ -72,7 +99,5 @@ public class Universe {
         }
         return textures;
     }
-
-
 
 }

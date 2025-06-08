@@ -3,9 +3,9 @@
 	"id": "dragon_experiments",
 	"version": "${version}",
 	"name": "Dragon Experiments",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Random things to learn modding (Now mainly space stuff)",
 	"authors": [
-		"Me!"
+		"Dragoncraft"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",

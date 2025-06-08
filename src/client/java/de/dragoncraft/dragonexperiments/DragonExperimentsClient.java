@@ -1,17 +1,21 @@
 package de.dragoncraft.dragonexperiments;
 
 import de.dragoncraft.dragonexperiments.block.ModBlocks;
+import de.dragoncraft.dragonexperiments.editor.UniverseInspector;
 import de.dragoncraft.dragonexperiments.entity.ModEntities;
 import de.dragoncraft.dragonexperiments.render.ShaderManager;
 import de.dragoncraft.dragonexperiments.render.entity.ShipSeatEntityRender;
 import de.dragoncraft.dragonexperiments.ship.ShipController;
+import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.event.VeilRenderLevelStageEvent;
 import foundry.veil.fabric.event.FabricVeilRenderLevelStageEvent;
+import foundry.veil.fabric.event.FabricVeilRendererAvailableEvent;
 import lombok.Getter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 
 public class DragonExperimentsClient implements ClientModInitializer {
@@ -25,16 +29,32 @@ public class DragonExperimentsClient implements ClientModInitializer {
 		KeybindManager.initialize();
 
 		FabricVeilRenderLevelStageEvent.EVENT.register((stage, levelRenderer, bufferSource, matrixStack, frustumMatrix, projectionMatrix, renderTick, deltaTracker, camera, frustum) -> {
+			if (DragonExperiments.universe == null) {return;}
+			if (MinecraftClient.getInstance().player == null) {return;}
+			if (VeilRenderSystem.renderer() == null) {return;}
 			if (stage == VeilRenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
-				ShaderManager.updateSpaceShader();
+				if (MinecraftClient.getInstance().player.getEntityWorld().getRegistryKey().getValue().equals(DragonExperiments.universe.getPhysicalWorld().getRegistryKey().getValue())) {
+					ShaderManager.renderSpaceView();
+					return;
+				}
 			}
+
+			if (MinecraftClient.getInstance().player.getEntityWorld().getRegistryKey().getValue().equals(DragonExperiments.universe.getPhysicalWorld().getRegistryKey().getValue())) {
+				return;
+			}
+			if (stage == VeilRenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+				ShaderManager.updatePlanetWorldLight(DragonExperiments.universe.getEarth());
+				ShaderManager.renderPlanetView(DragonExperiments.universe.getEarth());
+			}
+
 		});
+		FabricVeilRendererAvailableEvent.EVENT.register(renderer -> renderer.getEditorManager().add(new UniverseInspector()));
+
 
 		shipController = new ShipController();
 		ClientTickEvents.START_CLIENT_TICK.register((client) -> shipController.updateLastPos());
 
 		EntityRendererRegistry.register(ModEntities.SEAT_ENTITY, ShipSeatEntityRender::new);
-
 
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PRIVACY_GLASS_BLOCK, RenderLayer.getTranslucent());
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.REINFORCED_PRIVACY_GLASS_BLOCK, RenderLayer.getTranslucent());

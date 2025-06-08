@@ -13,14 +13,16 @@ public class CelestialBody {
     public static int MAX_RECURSION_LEVELS = 10;
 
     @Getter
-    private final String bodyName;
+    protected final String bodyName;
     @Getter
-    private Identifier textureName;
+    protected Identifier textureName;
     @Getter
-    private Identifier upperLayerTextureName;
+    protected Identifier upperLayerTextureName;
 
     @Setter
     protected boolean rendered;
+    @Getter
+    protected boolean hasCollision = true;
 
     protected boolean staticPosition = false;
 
@@ -28,6 +30,7 @@ public class CelestialBody {
     protected double orbitTime = 10;
     @Getter
     protected int radius;
+    @Getter
     protected double rotationTime;
 
     protected final List<CelestialBody> orbitingCelestialBodies = new ArrayList<>();
@@ -44,8 +47,15 @@ public class CelestialBody {
     @Getter @Setter
     protected Vec3d lastRenderedPosition = new Vec3d(0,0,0);
 
+    protected double planetMass;
 
 
+
+    public CelestialBody(String bodyName,boolean hasCollision) {
+        this.bodyName = bodyName;
+        this.rendered = false;
+        this.hasCollision = hasCollision;
+    }
     public CelestialBody(String bodyName) {
         this.bodyName = bodyName;
         this.rendered = false;
@@ -67,32 +77,33 @@ public class CelestialBody {
         return this;
     }
 
-    public CelestialBody setRenderDetails(int radius,int rotationTime,Identifier texture) {
+    public CelestialBody setRenderDetails(Identifier texture) {
         this.rendered = true;
-        this.radius = radius;
-        this.rotationTime = rotationTime;
         this.textureName = texture;
         return this;
     }
-    public CelestialBody setRenderDetails(int radius,int rotationTime,Identifier texture,Identifier upperLayerTextureName) {
+    public CelestialBody setRenderDetails(Identifier texture, Identifier upperLayerTextureName) {
         this.rendered = true;
-        this.radius = radius;
-        this.rotationTime = rotationTime;
         this.textureName = texture;
         this.upperLayerTextureName = upperLayerTextureName;
         return this;
     }
 
-    public CelestialBody setOrbit(int orbitDistance, double orbitTime) {
+    public CelestialBody setPhysicalDetails(int radius,double rotationTime, int orbitDistance, double orbitTime) {
+        this.radius = radius;
+        this.rotationTime = rotationTime;
         this.orbitDistance = orbitDistance;
         this.orbitTime = orbitTime;
         return this;
     }
 
 
-
     private void addReferenceFrame(CelestialBody parent) {
         currentPosition = currentPosition.add(parent.currentPosition);
+    }
+
+    public Vec3d getPlanetVelocity() {
+        return currentPosition.subtract(lastPosition);
     }
 
     public void tickPosition(long universeTime) {

@@ -1,5 +1,6 @@
 package de.dragoncraft.dragonexperiments.components;
 
+import de.dragoncraft.dragonexperiments.solarsystem.CelestialBody;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
 import org.ladysnake.cca.api.v3.component.ComponentV3;
@@ -12,6 +13,9 @@ public interface ShipComponentInterface extends ComponentV3 , AutoSyncedComponen
     Vec3d getShipOrigin();
     Quaternionf getShipRotation();
     Vec3d getShipVelocity();
+
+    CelestialBody getReferenceFrameBody();
+    String getReferenceFrame();
     Quaternionf getShipAngularVelocity();
 }
 

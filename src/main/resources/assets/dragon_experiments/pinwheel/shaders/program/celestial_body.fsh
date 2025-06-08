@@ -22,7 +22,7 @@ void main() {
     vec4 realWorldPos = -screenToWorldSpace(texCoord,depthSample);
     vec3 rd = viewDirFromUv(texCoord);
     rd = rotateByQuaternion(rd,ShipRotation);
-    vec3 ro = rotateByQuaternion(VeilCamera.CameraPosition - ShipOrigin,ShipRotation) + ShipPos;
+    vec3 ro = rotateByQuaternion(VeilCamera.CameraPosition - ShipOrigin,ShipRotation) * 0.01 + ShipPos;
 
     float closestDepth = 4200000000;
     float maxDepthPass = 4200000000;
@@ -37,13 +37,16 @@ void main() {
         if (planetHit.x > closestDepth && planetHit.x < maxDepthPass) {
             rayhitPlanet = false;
         }
+        if (HidePlanetsIfNear > 0 && distance(PlanetPositions[i],ro) < PlanetSizes[i] + HidePlanetsIfNear && depthSample < 1) {
+           rayhitPlanet = false;
+        }
 
         if (hitPlanet(planetHit.x,depthSample,ro,worldPos) && rayhitPlanet) {
-            fragColor = vec4(1);
+
             closestDepth = planetHit.x;
             vec3 p = ro + rd * planetHit.x;
             vec3 normal = genNormal(p,PlanetPositions[i],PlanetSizes[i]);
-            float diffLight = genLight(p,normal,LightPosition);
+            float diffLight = genLightSimple(p,normal,LightPosition);
             if (length(PlanetPositions[i] - LightPosition) < 1000) {
                 diffLight = 1;
             }
@@ -51,13 +54,14 @@ void main() {
             vec2 planetTexCoord = normalToSpherical(texDir);
             vec4 clouds = vec4(0);
             vec4 albedo = vec4(0);
-            albedo = texture(PlanetTexturesSampler, vec3(planetTexCoord + vec2(GameTime * 1,0),PlanetTextures[i]));
+            albedo = texture(PlanetTexturesSampler, vec3(planetTexCoord + vec2(GameTime * (1.0 / PlanetRotationSpeeds[i]),0),PlanetTextures[i]));
 
             int t = UpperLayerTextures[i];
             if (t != 0) {
-               clouds = texture(PlanetTexturesSampler, vec3(planetTexCoord + vec2(GameTime * 1,0), UpperLayerTextures[i]));
+               clouds = texture(PlanetTexturesSampler, vec3(planetTexCoord + vec2(GameTime * (0.6 / PlanetRotationSpeeds[i]),0), UpperLayerTextures[i]));
             }
             fragColor = vec4(mix((albedo.rgb * diffLight),(clouds.rgb * diffLight),clouds.r * 0.9),1);
+
             //fragColor = vec4(((albedo.rgb * diffLight) + (clouds.rgb * 0.3 * diffLight)),1);
         }
 

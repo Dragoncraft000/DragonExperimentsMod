@@ -3,7 +3,8 @@
 	"package": "de.dragoncraft.dragonexperiments.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin"
+		"ExampleClientMixin",
+		"LightmapMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

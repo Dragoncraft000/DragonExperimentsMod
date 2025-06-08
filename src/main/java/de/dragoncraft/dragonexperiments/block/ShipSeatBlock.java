@@ -27,7 +27,6 @@ public class ShipSeatBlock extends Block {
         if (world.isClient) {
             return super.onUse(state,world,pos,player,hit);
         }
-        System.out.println("Test");
         if (player.getVehicle() == null) {
             SeatEntity seat = ModEntities.SEAT_ENTITY.create(world);
             if (seat != null) {

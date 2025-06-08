@@ -22,9 +22,11 @@ public class Star extends CelestialBody {
     protected float atmosphereSize = 50;
     protected float atmosphereFalloff = 50;
 
+
     public Star(String bodyName) {
-        super(bodyName);
+        super(bodyName,false);
     }
+
 
     public Star setAtmosphere(Vec3d color,float brigtness,float size,float falloff) {
         this.color = color;

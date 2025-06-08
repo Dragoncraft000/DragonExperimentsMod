@@ -12,6 +12,8 @@ public class ModGamerules {
             GameRuleRegistry.register("shipBrake", GameRules.Category.MISC, GameRuleFactory.createIntRule(20000,1));
     public static final GameRules.Key<GameRules.IntRule> SHIP_ROTATION_SENSITIVITY =
             GameRuleRegistry.register("shipRotationSensitivity", GameRules.Category.MISC, GameRuleFactory.createIntRule(200,1));
+    public static final GameRules.Key<GameRules.BooleanRule> ENABLE_GRAVITY =
+            GameRuleRegistry.register("shipGravityEnabled", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
 
     public static void initialize() {}
 }

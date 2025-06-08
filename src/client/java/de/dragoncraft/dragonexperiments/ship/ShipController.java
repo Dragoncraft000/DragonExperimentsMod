@@ -7,9 +7,10 @@ import lombok.Setter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.Vec3d;
 
+@Getter
 public class ShipController {
 
-    @Getter@Setter
+    @Setter
     private Vec3d lastPos = new Vec3d(0,0,0);
 
     public void updateLastPos() {
@@ -34,7 +35,6 @@ public class ShipController {
             return;
         }
         //ClientPlayNetworking.send();
-        System.out.println("Accelerate");
         ShipComponent component = ModComponents.SHIP_COMPONENT.get( MinecraftClient.getInstance().player.getWorld());
         component.setShipVelocity(component.getShipVelocity().add(acceleration));
     }

@@ -13,6 +13,7 @@ public class PlanetsUniformContainer {
     public int[] useUpperLayer;
     public Vector3f[] planetPositions;
     public float[] planetSizes;
+    public float[] planetRotationSpeeds;
 
     public int[] atmosphereTypes;
     public float[] atmosphereSizes;
@@ -37,6 +38,8 @@ public class PlanetsUniformContainer {
         Arrays.fill(planetSizes,0);
         planetSizes = new float[amount];
         Arrays.fill(planetSizes,0);
+        planetRotationSpeeds = new float[amount];
+        Arrays.fill(planetRotationSpeeds,10000);
 
         atmosphereTypes = new int[amount];
         Arrays.fill(atmosphereTypes,0);

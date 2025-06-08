@@ -4,7 +4,7 @@
 uniform sampler2D DiffuseSampler0;
 uniform sampler2D DiffuseDepthSampler;
 
-const float FogStart = -10;
+const float FogStart = 1;
 const float FogEnd = 100;
 uniform vec4 FogColor;
 uniform int FogShape;
@@ -27,7 +27,16 @@ void main() {
     vec4 baseColor = texture(DiffuseSampler0, texCoord);
     float depthSample = texture(DiffuseDepthSampler, texCoord).r;
     vec3 pos = viewPosFromDepthSample(depthSample, texCoord);
-    vec4 worldPos = screenToWorldSpace(texCoord,depthSample);
+
     float vertexDistance = fog_distance(pos, FogShape);
-    fragColor = linear_fog(baseColor, vertexDistance + sin(worldPos.r * worldPos.g * worldPos.b * 0.00001 + GameTime * 1000) * 10, FogStart, FogEnd, vec4(1));
+
+    float dist = abs(VeilCamera.CameraPosition.y - 260);
+
+    float atmoFade = 1.5 - dist / 80;
+    atmoFade = max(atmoFade,0);
+    if (depthSample == 1) {
+        fragColor = mix(baseColor,vec4(1.),atmoFade);
+        return;
+    }
+    fragColor = mix(baseColor,linear_fog(baseColor, vertexDistance, FogStart, FogEnd,vec4(1.)),atmoFade);
 }

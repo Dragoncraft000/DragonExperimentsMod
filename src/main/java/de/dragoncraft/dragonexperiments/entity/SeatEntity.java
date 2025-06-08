@@ -3,6 +3,7 @@ package de.dragoncraft.dragonexperiments.entity;
 import de.dragoncraft.dragonexperiments.components.ModComponents;
 import de.dragoncraft.dragonexperiments.components.ShipComponent;
 import de.dragoncraft.dragonexperiments.gamerules.ModGamerules;
+import de.dragoncraft.dragonexperiments.utils.FormattingUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -10,6 +11,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.joml.Vector3f;
@@ -53,14 +55,18 @@ public class SeatEntity extends Entity  {
         }
     }
     public void handlePlayerSteer(PlayerEntity player, Vector3f move, Vector3f steering) {
-
         ShipComponent component = ModComponents.SHIP_COMPONENT.get( player.getWorld());
         component.addAngularMomentum(move.mul(player.getWorld().getGameRules().getInt(ModGamerules.SHIP_ROTATION_SENSITIVITY) * 1e-5f));
+
+        player.sendMessage(Text.of( FormattingUtils.formatVec3d(component.getShipPosition()) + " - Velocity: " + FormattingUtils.formatVelocity((int) component.getShipVelocity().length())),true);
         if (steering.y == -100) {
             component.brakeShip(player.getWorld().getGameRules().getInt(ModGamerules.SHIP_BRAKE) * 0.05e-3f);
             return;
         }
-        component.accelerateLocal(steering.mul(player.getWorld().getGameRules().getInt(ModGamerules.SHIP_ACCELERATION) * 0.05e-3f));
+        if (steering.lengthSquared() == 0) {
+            return;
+        }
+        component.accelerateLocal(steering.normalize().mul(player.getWorld().getGameRules().getInt(ModGamerules.SHIP_ACCELERATION) * 0.05e-3f));
         component.setShipOrigin(player.getPos());
     }
 

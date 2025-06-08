@@ -1,9 +1,6 @@
 package de.dragoncraft.dragonexperiments.solarsystem;
 
-import de.dragoncraft.dragonexperiments.DragonExperiments;
-import foundry.veil.api.client.render.post.PostPipeline;
 import lombok.Getter;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 @Getter
@@ -18,9 +15,14 @@ public class Planet extends CelestialBody {
 
     protected float atmosphereBrightness = 2f;
 
+    public Planet(String bodyName, boolean hasCollision) {
+        super(bodyName, hasCollision);
+    }
+
     public Planet(String bodyName) {
         super(bodyName);
     }
+
 
     public Planet setAtmosphere(Vec3d rayleighCoeffiecents, float rayleighScaleHeight, float mieCoeffiecent, float mieScaleHeight,float atmosphereBrightness, float atmosphereSize) {
         this.atmosphereRayleighCoeffiecents = rayleighCoeffiecents;

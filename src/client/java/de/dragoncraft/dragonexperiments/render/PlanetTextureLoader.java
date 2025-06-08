@@ -22,7 +22,7 @@ public class PlanetTextureLoader {
     @Getter
     private static int textureArrayId = -1;
 
-    public static boolean texturesLoaded = true;
+    public static boolean texturesLoaded = false;
 
     private static final Map<Identifier, Integer> textureIndexMap = new TreeMap<>();
 
