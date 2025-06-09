@@ -38,9 +38,8 @@ void main() {
             rayhitPlanet = false;
         }
         if (HidePlanetsIfNear > 0 && distance(PlanetPositions[i],ro) < PlanetSizes[i] + HidePlanetsIfNear && depthSample < 1) {
-           rayhitPlanet = false;
+          rayhitPlanet = false;
         }
-
         if (hitPlanet(planetHit.x,depthSample,ro,worldPos) && rayhitPlanet) {
 
             closestDepth = planetHit.x;
@@ -85,15 +84,14 @@ void main() {
             }
             float atmoT = (atmoHit.x);
             vec3 atmoP = ro + rd * atmoT;
-
             if (AtmosphereTypes[i] == 1) {
                 vec3 color = atmosphere(
                     rd,           // normalized ray direction
-                    atmoP - PlanetPositions[i],               // ray origin
-                    LightPosition - PlanetPositions[i],                        // position of the sun
+                    (atmoP - PlanetPositions[i]),               // ray origin
+                    (LightPosition - PlanetPositions[i]),                        // position of the sun
                     SunBrightness,                           // intensity of the sun
-                    PlanetSizes[i],                         // radius of the celestialBody in meters
-                    atmoSize,                         // radius of the atmosphere in meters
+                    PlanetSizes[i] ,                         // radius of the celestialBody in meters
+                    atmoSize ,                         // radius of the atmosphere in meters
                     AtmosphereRayleighCoefficients[i] / sizeMod, // Rayleigh scattering coefficient
                     AtmosphereMieCoefficients[i] / sizeMod,                          // Mie scattering coefficient
                     AtmosphereRayleighScaleHeights[i] * sizeMod,                            // Rayleigh scale height

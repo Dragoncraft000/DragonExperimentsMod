@@ -226,8 +226,8 @@ public class ShipComponent implements ShipComponentInterface {
         }
         setShipPos(shipPos.add(referenceFrameBody.getPlanetVelocity()));
         double distanceToReference = shipPos.distanceTo(referenceFrameBody.getCurrentPosition());
-        if (distanceToReference < referenceFrameBody.getRadius() + 10 && referenceFrameBody.isHasCollision()) {
-            Vec3d relativePos = shipPos.subtract(referenceFrameBody.getCurrentPosition()).normalize().multiply(referenceFrameBody.getRadius()+ 10.1 );
+        if (distanceToReference < referenceFrameBody.getRadius() + 5 && referenceFrameBody.isHasCollision()) {
+            Vec3d relativePos = shipPos.subtract(referenceFrameBody.getCurrentPosition()).normalize().multiply(referenceFrameBody.getRadius() + 5.1 );
             shipPos = referenceFrameBody.getCurrentPosition().add(relativePos);
 
             setShipVelocity(new Vec3d(0,0,0));

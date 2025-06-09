@@ -15,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.joml.*;
 
 import java.lang.Math;
@@ -35,10 +36,29 @@ public class ShaderManager {
     private static Quaternionf currentRot;
     private static Quaternionf targetRot;
 
+    @Getter
     private static int lastUniverseHash = 0;
 
     @Getter
     private static float planetSkyLight = 0;
+
+    @Getter
+    private static CelestialBody currentCelestialBody = null;
+
+
+    public static void updateCurrentCelestialBody() {
+        if (MinecraftClient.getInstance().player == null) {
+            return;
+        }
+        updateCurrentCelestialBody(MinecraftClient.getInstance().player.clientWorld);
+    }
+    public static void updateCurrentCelestialBody(World world) {
+        Identifier key = world.getRegistryKey().getValue();
+        System.out.println(key.toString());
+        currentCelestialBody = DragonExperiments.universe.getDimensionLinkedBody(key);
+        System.out.println(DragonExperiments.universe.getDimensionLinkedBody(key));
+    }
+
 
     public static void initialize() {
 
@@ -57,11 +77,26 @@ public class ShaderManager {
         PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(SPACE_RENDER_PIPELINE);
         updateShipPosition();
         setShipSettings(currentPos,currentRot,pipeline);
+        writePlanetUniforms(currentPos);
         renderSpaceShader(currentPos);
+    }
+    public static void renderCurrentPlanetView() {
+        if (MinecraftClient.getInstance().player == null) {
+            return;
+        }
+        if (VeilRenderSystem.renderer() == null) {
+            return;
+        }
+        if (currentCelestialBody == null) {
+            return;
+        }
+
+        updatePlanetWorldLight(currentCelestialBody);
+        renderPlanetView(currentCelestialBody);
     }
 
     private static double getPlanetRotationTime(CelestialBody body) {
-        double time = MinecraftClient.getInstance().player.getWorld().getTime() + MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true);
+        double time = DragonExperiments.universe.getPhysicalWorld().getTime() + MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true);
         time /= 24000;
         time /= body.getRotationTime();
         return time * 360 + 180;
@@ -80,17 +115,19 @@ public class ShaderManager {
         if (VeilRenderSystem.renderer() == null) {
             return;
         }
+        PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(SPACE_RENDER_PIPELINE);
+        if (pipeline == null) {
+            return;
+        }
         double time = getPlanetRotationTime(planet);
         Quaternionf rotation = getPlanetViewRotation(planet);
-        Vector3d pos = new Vector3d(0, 0, planet.getRadius() + 10);
+        Vector3d pos = new Vector3d(0, 0, planet.getRadius() + 0.1);
         pos.rotateY(-(float) Math.toRadians(time));
-        PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(SPACE_RENDER_PIPELINE);
         Vec3d origin = MinecraftClient.getInstance().player.getPos();
-        origin = new Vec3d(origin.x,Math.max(82,origin.y * 0.9 - 200),origin.z);
-
+        origin = new Vec3d(origin.x,1,origin.z);
         setShipSettings(planet.getLastRenderedPosition().add(new Vec3d(pos.x,pos.y,pos.z)),rotation ,origin,pipeline);
         pipeline.setInt("HidePlanetsIfNear",MinecraftClient.getInstance().options.getClampedViewDistance() * 16 - 16 * -100);
-        renderSpaceShader(planet.getCurrentPosition().add(new Vec3d(pos.x,pos.y,pos.z)));
+        renderSpaceShader(planet.getLastRenderedPosition().add(new Vec3d(pos.x,pos.y,pos.z)));
     }
 
     public static void updatePlanetWorldLight(CelestialBody planet) {
@@ -126,8 +163,8 @@ public class ShaderManager {
         if (referenceFrameBody != null && referenceFrameBody.isHasCollision()) {
             Vec3d planetPos = InterpolationUtils.interpolateLinear(referenceFrameBody.getLastRenderedPosition(), referenceFrameBody.getCurrentPosition(), 0.01f);
             double distanceToReference = currentPos.distanceTo(planetPos);
-            if (distanceToReference < referenceFrameBody.getRadius() + 0.1) {
-                Vec3d relativePos = currentPos.subtract(planetPos).normalize().multiply(referenceFrameBody.getRadius()+ 0.1 );
+            if (distanceToReference < referenceFrameBody.getRadius() + 5) {
+                Vec3d relativePos = currentPos.subtract(planetPos).normalize().multiply(referenceFrameBody.getRadius()+ 5 );
                 currentPos = planetPos.add(relativePos) ;
             }
         }
@@ -144,7 +181,7 @@ public class ShaderManager {
 
     private static void setShipSettings(Vec3d shipPosition,Quaternionf shipRotation,PostPipeline pipeline) {
         Vector4f rot = new Vector4f(shipRotation.x,shipRotation.y,shipRotation.z,shipRotation.w);
-        ShipComponent component = ModComponents.SHIP_COMPONENT.get( MinecraftClient.getInstance().player.getWorld());
+        ShipComponent component = DragonExperiments.universe.getPhysicalWorld().getComponent(ModComponents.SHIP_COMPONENT);
         if (pipeline == null) {
             return;
         }
@@ -200,7 +237,7 @@ public class ShaderManager {
         program.setSampler("PlanetTexturesSampler",PlanetTextureLoader.getTextureArrayId());
     }
 
-    public static void renderSpaceShader(Vec3d shipPosition) {
+    public static void writePlanetUniforms(Vec3d shipPosition) {
         List<CelestialBody> bodiesToRender = DragonExperiments.universe.getAllBodies();
 
         bodiesToRender.sort((c1,c2) -> {
@@ -216,6 +253,11 @@ public class ShaderManager {
 
         if (!updateTextures()) {return;}
         setPlanetSettings(bodiesToRender);
+    }
+
+
+    public static void renderSpaceShader(Vec3d shipPosition) {
+        writePlanetUniforms(shipPosition);
         PostPipeline pipeline = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(SPACE_RENDER_PIPELINE);
         if (pipeline == null) {
             return;
@@ -246,8 +288,12 @@ public class ShaderManager {
             container.atmosphereBrightnesses[id] = planet.getAtmosphereBrightness();
             container.atmosphereRayleighCoefficients[id] = planet.getAtmosphereRayleighCoeffiecents().toVector3f().mul(1e-4f);
             container.atmosphereRayleighScaleHeight[id] = planet.getAtmosphereRayleighScaleHeight();
-            container.atmosphereMieCoefficients[id] = planet.getAtmosphereMieCoeffiecent() * 1e-4f;
+            container.atmosphereMieCoefficients[id] = planet.getAtmosphereMieCoefficient() * 1e-4f;
             container.atmosphereMieScaleHeight[id] = planet.getAtmosphereMieScaleHeight();
+            if (planet.equals(currentCelestialBody)) {
+                container.atmosphereMieScaleHeight[id] = planet.getOnWorldMieScaleHeightOverride();
+                container.atmosphereMieCoefficients[id] = planet.getOnWorldMieCoefficientOverride()* 1e-4f ;
+            }
         }
         if (celestialBody instanceof Star star) {
             container.atmosphereTypes[id] = 2;

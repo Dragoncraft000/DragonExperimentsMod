@@ -132,7 +132,7 @@ float genLight(vec3 p,vec3 normal,vec3 lightPos) {
 
 float genLightSimple(vec3 p,vec3 normal,vec3 lightPos) {
     vec3 l = normalize(lightPos-p);
-    return max(dot(normal,l),-1);
+    return clamp(dot(normal,l) +0.3,0.01,1.);
 }
 
 float raymarchAtmosphere(vec3 ro,vec3 rd,vec3 PlanetPos, float Size) {

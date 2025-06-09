@@ -14,6 +14,7 @@ import lombok.Getter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -39,17 +40,16 @@ public class DragonExperimentsClient implements ClientModInitializer {
 				}
 			}
 
-			if (MinecraftClient.getInstance().player.getEntityWorld().getRegistryKey().getValue().equals(DragonExperiments.universe.getPhysicalWorld().getRegistryKey().getValue())) {
-				return;
+			if (DragonExperiments.universe.getHash() != ShaderManager.getLastUniverseHash()) {
+				ShaderManager.updateCurrentCelestialBody();
 			}
-			if (stage == VeilRenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
-				ShaderManager.updatePlanetWorldLight(DragonExperiments.universe.getEarth());
-				ShaderManager.renderPlanetView(DragonExperiments.universe.getEarth());
+			if (stage == VeilRenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS && ShaderManager.getCurrentCelestialBody() != null) {
+				ShaderManager.renderCurrentPlanetView();
 			}
 
 		});
 		FabricVeilRendererAvailableEvent.EVENT.register(renderer -> renderer.getEditorManager().add(new UniverseInspector()));
-
+		ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register((client,world) -> ShaderManager.updateCurrentCelestialBody(world));
 
 		shipController = new ShipController();
 		ClientTickEvents.START_CLIENT_TICK.register((client) -> shipController.updateLastPos());

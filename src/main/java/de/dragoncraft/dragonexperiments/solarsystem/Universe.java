@@ -19,6 +19,8 @@ public class Universe {
 
     private final Map<String,CelestialBody> cachedBodyNames = new HashMap<>();
 
+    private Map<Identifier,String> dimensionCelestialBodies = new HashMap<>();
+
     public Universe() {}
     public Universe(World physicalWorld) {
         this.physicalWorld = physicalWorld;
@@ -26,9 +28,9 @@ public class Universe {
 
     public void reconstruct(Universe newUniverse) {
         celestialBodies = newUniverse.celestialBodies;
+        dimensionCelestialBodies = newUniverse.dimensionCelestialBodies;
         updateBodyNames();
         hash++;
-        earth = getCelestialBody("earth");
     }
 
     public Universe addBody(CelestialBody body) {
@@ -36,9 +38,18 @@ public class Universe {
         updateBodyNames();
         return this;
     }
-
-    @Getter
-    private CelestialBody earth;
+    public Universe addDimensionLinkedBody(Identifier dimension,String bodyName) {
+        dimensionCelestialBodies.put(dimension,bodyName);
+        return this;
+    }
+    public CelestialBody getDimensionLinkedBody(Identifier dimension) {
+        System.out.println(Arrays.toString(dimensionCelestialBodies.keySet().toArray()));
+        if (!dimensionCelestialBodies.containsKey(dimension)) {
+            return null;
+        }
+        System.out.println(dimension);
+        return getCelestialBody(dimensionCelestialBodies.get(dimension));
+    }
 
 
 

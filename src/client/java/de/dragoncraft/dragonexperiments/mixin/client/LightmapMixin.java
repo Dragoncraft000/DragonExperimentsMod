@@ -24,6 +24,9 @@ public abstract class LightmapMixin {
             index = 0
     )
     private float modifySkyBrightnessArgument(float originalP) {
+        if (ShaderManager.getCurrentCelestialBody() == null) {
+            return originalP;
+        }
         return ShaderManager.getPlanetSkyLight();
     }
 }
