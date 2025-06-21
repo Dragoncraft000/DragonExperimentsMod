@@ -28,6 +28,7 @@ public class CelestialBody {
 
     protected int orbitDistance = 10000;
     protected double orbitTime = 10;
+    protected double orbitOffset = 0;
     @Getter
     protected int radius;
     @Getter
@@ -90,10 +91,14 @@ public class CelestialBody {
     }
 
     public CelestialBody setPhysicalDetails(int radius,double rotationTime, int orbitDistance, double orbitTime) {
+        return setPhysicalDetails(radius,rotationTime,orbitDistance,orbitTime,0);
+    }
+    public CelestialBody setPhysicalDetails(int radius,double rotationTime, int orbitDistance, double orbitTime,double orbitOffset) {
         this.radius = radius;
         this.rotationTime = rotationTime;
         this.orbitDistance = orbitDistance;
         this.orbitTime = orbitTime;
+        this.orbitOffset = orbitOffset;
         return this;
     }
 
@@ -116,7 +121,7 @@ public class CelestialBody {
         }
         lastPosition = new Vec3d(currentPosition.x,currentPosition.y,currentPosition.z);
         if (!staticPosition) {
-            currentOrbitAngle = universeTime * (360 / (orbitTime * 24000)) % 360;
+            currentOrbitAngle = (orbitOffset + universeTime * (360 / (orbitTime * 24000))) % 360;
             double radians = Math.toRadians(currentOrbitAngle);
             currentPosition = new Vec3d(Math.sin(radians) * orbitDistance,0,Math.cos(radians) * orbitDistance);
         }

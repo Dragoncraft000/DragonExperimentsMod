@@ -54,9 +54,7 @@ public class ShaderManager {
     }
     public static void updateCurrentCelestialBody(World world) {
         Identifier key = world.getRegistryKey().getValue();
-        System.out.println(key.toString());
         currentCelestialBody = DragonExperiments.universe.getDimensionLinkedBody(key);
-        System.out.println(DragonExperiments.universe.getDimensionLinkedBody(key));
     }
 
 
@@ -96,7 +94,7 @@ public class ShaderManager {
     }
 
     private static double getPlanetRotationTime(CelestialBody body) {
-        double time = DragonExperiments.universe.getPhysicalWorld().getTime() + MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true);
+        double time = DragonExperiments.universe.getPhysicalWorld().getTime() + MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
         time /= 24000;
         time /= body.getRotationTime();
         return time * 360 + 180;
@@ -125,9 +123,10 @@ public class ShaderManager {
         pos.rotateY(-(float) Math.toRadians(time));
         Vec3d origin = MinecraftClient.getInstance().player.getPos();
         origin = new Vec3d(origin.x,1,origin.z);
-        setShipSettings(planet.getLastRenderedPosition().add(new Vec3d(pos.x,pos.y,pos.z)),rotation ,origin,pipeline);
-        pipeline.setInt("HidePlanetsIfNear",MinecraftClient.getInstance().options.getClampedViewDistance() * 16 - 16 * -100);
-        renderSpaceShader(planet.getLastRenderedPosition().add(new Vec3d(pos.x,pos.y,pos.z)));
+        Vec3d newPos = InterpolationUtils.interpolateLinear(planet.getLastRenderedPosition(), planet.getCurrentPosition(), 0.01f);
+        setShipSettings(newPos.add(new Vec3d(pos.x,pos.y,pos.z)),rotation ,origin,pipeline);
+        pipeline.getOrCreateUniform("HidePlanetsIfNear").setInt(MinecraftClient.getInstance().options.getClampedViewDistance() * 16 - 16 * -100);
+        renderSpaceShader(newPos.add(new Vec3d(pos.x,pos.y,pos.z)));
     }
 
     public static void updatePlanetWorldLight(CelestialBody planet) {
@@ -185,20 +184,20 @@ public class ShaderManager {
         if (pipeline == null) {
             return;
         }
-        pipeline.setVector("ShipOrigin",component.getShipOrigin().toVector3f());
-        pipeline.setVector("ShipPos",shipPosition.toVector3f());
-        pipeline.setVector("ShipRotation",rot);
-        pipeline.setVector("LightPosition",new Vector3f(0,0,0));
+        pipeline.getOrCreateUniform("ShipOrigin").setVector(component.getShipOrigin().toVector3f());
+        pipeline.getOrCreateUniform("ShipPos").setVector(shipPosition.toVector3f());
+        pipeline.getOrCreateUniform("ShipRotation").setVector(rot);
+        pipeline.getOrCreateUniform("LightPosition").setVector(new Vector3f(0,0,0));
     }
     private static void setShipSettings(Vec3d shipPosition,Quaternionf shipRotation,Vec3d shipOrigin,PostPipeline pipeline) {
         Vector4f rot = new Vector4f(shipRotation.x,shipRotation.y,shipRotation.z,shipRotation.w);
         if (pipeline == null) {
             return;
         }
-        pipeline.setVector("ShipOrigin",shipOrigin.toVector3f());
-        pipeline.setVector("ShipPos",shipPosition.toVector3f());
-        pipeline.setVector("ShipRotation",rot);
-        pipeline.setVector("LightPosition",new Vector3f(0,0,0));
+        pipeline.getOrCreateUniform("ShipOrigin").setVector(shipOrigin.toVector3f());
+        pipeline.getOrCreateUniform("ShipPos").setVector(shipPosition.toVector3f());
+        pipeline.getOrCreateUniform("ShipRotation").setVector(rot);
+        pipeline.getOrCreateUniform("LightPosition").setVector(new Vector3f(0,0,0));
     }
 
     private static void setPlanetSettings(List<CelestialBody> bodiesToRender) {
@@ -211,24 +210,25 @@ public class ShaderManager {
         for (int i = 0; i < bodiesToRender.size();i++) {
             addPlanetRenderingData(bodiesToRender.get(i),container,i);
         }
-        pipeline.setInt("PlanetCount",bodiesToRender.size());
+        pipeline.getOrCreateUniform("PlanetCount").setInt(bodiesToRender.size());
 
-        pipeline.setInts("UseTextures", container.useTexture);
-        pipeline.setInts("UseUpperLayerTextures", container.useUpperLayer);
-        pipeline.setVectors("PlanetPositions", container.planetPositions);
-        pipeline.setFloats("PlanetSizes", container.planetSizes);
-        pipeline.setFloats("PlanetRotationSpeeds", container.planetRotationSpeeds);
 
-        pipeline.setInts("AtmosphereTypes", container.atmosphereTypes);
-        pipeline.setFloats("AtmosphereSizes", container.atmosphereSizes);
-        pipeline.setVectors("AtmosphereRayleighCoefficients", container.atmosphereRayleighCoefficients);
-        pipeline.setFloats("AtmosphereRayleighScaleHeights", container.atmosphereRayleighScaleHeight);
-        pipeline.setFloats("AtmosphereMieCoefficients", container.atmosphereMieCoefficients );
-        pipeline.setFloats("AtmosphereMieScaleHeights", container.atmosphereMieScaleHeight);
-        pipeline.setFloats("AtmosphereBrightnesses", container.atmosphereBrightnesses);
+        pipeline.getOrCreateUniform("UseTextures").setInts(container.useTexture);
+        pipeline.getOrCreateUniform("UseUpperLayerTextures").setInts(container.useUpperLayer);
+        pipeline.getOrCreateUniform("PlanetPositions").setVectors(container.planetPositions);
+        pipeline.getOrCreateUniform("PlanetSizes").setFloats(container.planetSizes);
+        pipeline.getOrCreateUniform("PlanetRotationSpeeds").setFloats(container.planetRotationSpeeds);
 
-        pipeline.setInts("PlanetTextures",container.planetTextureIds);
-        pipeline.setInts("UpperLayerTextures",container.upperLayerTextureIds);
+        pipeline.getOrCreateUniform("AtmosphereTypes").setInts(container.atmosphereTypes);
+        pipeline.getOrCreateUniform("AtmosphereSizes").setFloats(container.atmosphereSizes);
+        pipeline.getOrCreateUniform("AtmosphereRayleighCoefficients").setVectors(container.atmosphereRayleighCoefficients);
+        pipeline.getOrCreateUniform("AtmosphereRayleighScaleHeights").setFloats(container.atmosphereRayleighScaleHeight);
+        pipeline.getOrCreateUniform("AtmosphereMieCoefficients").setFloats(container.atmosphereMieCoefficients );
+        pipeline.getOrCreateUniform("AtmosphereMieScaleHeights").setFloats(container.atmosphereMieScaleHeight);
+        pipeline.getOrCreateUniform("AtmosphereBrightnesses").setFloats(container.atmosphereBrightnesses);
+
+        pipeline.getOrCreateUniform("PlanetTextures").setInts(container.planetTextureIds);
+        pipeline.getOrCreateUniform("UpperLayerTextures").setInts(container.upperLayerTextureIds);
 
         ShaderProgram program = VeilRenderSystem.renderer().getShaderManager().getShader(CELESTIAL_BODY_SHADER);
         if (program == null) {
@@ -293,6 +293,7 @@ public class ShaderManager {
             if (planet.equals(currentCelestialBody)) {
                 container.atmosphereMieScaleHeight[id] = planet.getOnWorldMieScaleHeightOverride();
                 container.atmosphereMieCoefficients[id] = planet.getOnWorldMieCoefficientOverride()* 1e-4f ;
+                container.atmosphereBrightnesses[id] = planet.getOnWorldAtmosphereBrightnessOverride();
             }
         }
         if (celestialBody instanceof Star star) {

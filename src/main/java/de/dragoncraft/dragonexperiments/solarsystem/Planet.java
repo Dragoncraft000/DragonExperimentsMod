@@ -16,6 +16,7 @@ public class Planet extends CelestialBody {
 
     protected float onWorldMieScaleHeightOverride = 10f;
     protected float onWorldMieCoefficientOverride = 20f;
+    protected float onWorldAtmosphereBrightnessOverride = 5f;
 
     public Planet(String bodyName, boolean hasCollision) {
         super(bodyName, hasCollision);
@@ -35,6 +36,7 @@ public class Planet extends CelestialBody {
         this.atmosphereBrightness = atmosphereBrightness;
         this.onWorldMieCoefficientOverride = mieCoeffiecent;
         this.onWorldMieScaleHeightOverride = mieScaleHeight;
+        this.onWorldAtmosphereBrightnessOverride = atmosphereBrightness;
         return this;
     }
     public Planet setAtmosphere(Vec3d rayleighCoefficients, float rayleighScaleHeight, float mieCoefficient, float mieScaleHeight,float atmosphereBrightness) {
@@ -58,9 +60,10 @@ public class Planet extends CelestialBody {
         return setAtmosphere(new Vec3d(0,0,0),0,0,0,0);
     }
 
-    public Planet setOnWorldAtmosphereOverride(float mieCoefficient, float mieScaleHeight) {
+    public Planet setOnWorldAtmosphereOverride(float mieCoefficient, float mieScaleHeight,float atmosphereBrightness) {
         this.onWorldMieCoefficientOverride = mieCoefficient;
         this.onWorldMieScaleHeightOverride = mieScaleHeight;
+        this.onWorldAtmosphereBrightnessOverride = atmosphereBrightness;
         return this;
     }
 
