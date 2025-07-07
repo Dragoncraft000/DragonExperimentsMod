@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.Slice;
 @Mixin(LightmapTextureManager.class)
 public abstract class LightmapMixin {
 
-    @SuppressWarnings("UnresolvedMixinReference")
     @ModifyArg(
             method = "update(F)V",
             at = @At(

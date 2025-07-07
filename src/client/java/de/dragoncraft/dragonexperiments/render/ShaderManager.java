@@ -45,6 +45,8 @@ public class ShaderManager {
     @Getter
     private static CelestialBody currentCelestialBody = null;
 
+    private static double interpolatedWorldTime = -1;
+
 
     public static void updateCurrentCelestialBody() {
         if (MinecraftClient.getInstance().player == null) {
@@ -92,9 +94,11 @@ public class ShaderManager {
         updatePlanetWorldLight(currentCelestialBody);
         renderPlanetView(currentCelestialBody);
     }
-
     private static double getPlanetRotationTime(CelestialBody body) {
-        double time = DragonExperiments.universe.getPhysicalWorld().getTime() + MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        double targetTime = DragonExperiments.universe.getPhysicalWorld().getTime();
+        float step = MinecraftClient.getInstance().getRenderTickCounter().getLastFrameDuration() * 5;
+        interpolatedWorldTime = InterpolationUtils.lerp(interpolatedWorldTime,targetTime,step * 0.05f);
+        double time = interpolatedWorldTime;
         time /= 24000;
         time /= body.getRotationTime();
         return time * 360 + 180;
@@ -126,13 +130,13 @@ public class ShaderManager {
         Vec3d newPos = InterpolationUtils.interpolateLinear(planet.getLastRenderedPosition(), planet.getCurrentPosition(), 0.01f);
         setShipSettings(newPos.add(new Vec3d(pos.x,pos.y,pos.z)),rotation ,origin,pipeline);
         pipeline.getOrCreateUniform("HidePlanetsIfNear").setInt(MinecraftClient.getInstance().options.getClampedViewDistance() * 16 - 16 * -100);
-        renderSpaceShader(newPos.add(new Vec3d(pos.x,pos.y,pos.z)));
+        renderSpaceShader((planet.getLastRenderedPosition().add(new Vec3d(pos.x,pos.y,pos.z))));
     }
 
     public static void updatePlanetWorldLight(CelestialBody planet) {
         Vec3d lightDir = planet.getLastRenderedPosition().normalize().multiply(-1);
         Vector3f normal = new Vector3f(0,1,0).rotate(getPlanetViewRotation(planet));
-        planetSkyLight = MathHelper.clamp(normal.dot(lightDir.toVector3f()) + 0.2f,-0.08f,1);
+        planetSkyLight = MathHelper.clamp(normal.dot(lightDir.toVector3f()) +0.2f,-0.2f,1);
     }
 
     private static void updateShipPosition() {
