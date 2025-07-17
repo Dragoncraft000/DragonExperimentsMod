@@ -137,6 +137,10 @@ public class ShaderManager {
         Vec3d lightDir = planet.getLastRenderedPosition().normalize().multiply(-1);
         Vector3f normal = new Vector3f(0,1,0).rotate(getPlanetViewRotation(planet));
         planetSkyLight = MathHelper.clamp(normal.dot(lightDir.toVector3f()) +0.2f,-0.2f,1);
+        PostPipeline fog = VeilRenderSystem.renderer().getPostProcessingManager().getPipeline(Identifier.of(MOD_ID, "fog"));
+        if (fog != null) {
+            fog.getOrCreateUniform("skyLight").setFloat(planetSkyLight);
+        }
     }
 
     private static void updateShipPosition() {

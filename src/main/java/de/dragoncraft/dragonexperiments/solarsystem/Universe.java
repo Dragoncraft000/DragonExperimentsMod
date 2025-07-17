@@ -43,11 +43,9 @@ public class Universe {
         return this;
     }
     public CelestialBody getDimensionLinkedBody(Identifier dimension) {
-        System.out.println(Arrays.toString(dimensionCelestialBodies.keySet().toArray()));
         if (!dimensionCelestialBodies.containsKey(dimension)) {
             return null;
         }
-        System.out.println(dimension);
         return getCelestialBody(dimensionCelestialBodies.get(dimension));
     }
 
