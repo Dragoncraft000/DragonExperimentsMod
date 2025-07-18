@@ -115,10 +115,11 @@ void main() {
         vec3 p = fogRo + rd * i * stepDist;
         float densitySample = noise(p * 0.1);
 
-        float heightMod = clamp(1.5 - abs(p.y - 40) * 0.03,0,1);
-        float distanceMod = min(1,1.5 - length(ro.xz - p.xz) * 0.003);
+        float heightMod = clamp(1.5 - abs(p.y + 60) * 0.01,0,1);
+        float distanceMod = min(1,1.5 - length(ro - p) * 0.003);
         accumulatedDensity += densitySample * stepDist * heightMod * distanceMod;
     }
+    density *= 0.25 + skyLight * 0.75;
     intensity = accumulatedDensity * density;
     intensity = 1.0 - exp(-1.0 * intensity);
     fragColor = mix(baseColor,vec4(vec3(max(0.01,.9)),1),clamp(intensity,0,1));

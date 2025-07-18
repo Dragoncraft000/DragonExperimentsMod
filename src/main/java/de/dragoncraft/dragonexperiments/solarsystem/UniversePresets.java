@@ -24,7 +24,7 @@ public class UniversePresets {
                         .setAtmosphere(new Vec3d(55,130,224),5f,105,1.2f,2)
                         .setOnWorldAtmosphereOverride(10,20f,5f)
                         .setRenderDetails(Identifier.of(MOD_ID,"textures/shader/planet/earth.png"),Identifier.of(MOD_ID,"textures/shader/planet/clouds.png"))
-                        .setPhysicalDetails(2760,10,300_000,10000,10)
+                        .setPhysicalDetails(2760,1,300_000,10000,10)
                         .addOrbitingBody(new Planet("moon")
                                 .disableAtmosphere()
                                 .setRenderDetails(Identifier.of(MOD_ID,"textures/shader/planet/moon.png"))
@@ -42,7 +42,7 @@ public class UniversePresets {
                         .setRenderDetails(Identifier.of(MOD_ID,"textures/shader/planet/mars.png"))
                         .setPhysicalDetails(300,1,1_000_000_000,1000000000)))
         );
-        //universe.addDimensionLinkedBody(Identifier.of("minecraft", "overworld"),"earth");
+        universe.addDimensionLinkedBody(Identifier.of("minecraft", "overworld"),"earth");
         return universe;
     }
 

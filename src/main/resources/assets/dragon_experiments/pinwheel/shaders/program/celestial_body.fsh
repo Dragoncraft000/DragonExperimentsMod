@@ -22,7 +22,7 @@ void main() {
     vec4 realWorldPos = -screenToWorldSpace(texCoord,depthSample);
     vec3 rd = viewDirFromUv(texCoord);
     rd = rotateByQuaternion(rd,ShipRotation);
-    vec3 ro = rotateByQuaternion(VeilCamera.CameraPosition - ShipOrigin,ShipRotation) * 0.01 + ShipPos;
+    vec3 ro = rotateByQuaternion(VeilCamera.CameraPosition - ShipOrigin,ShipRotation) * 0.025 + ShipPos;
 
     float closestDepth = 4200000000;
     float maxDepthPass = 4200000000;
