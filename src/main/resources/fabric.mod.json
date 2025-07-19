@@ -21,9 +21,6 @@
 		"client": [
 			"de.dragoncraft.dragonexperiments.DragonExperimentsClient"
 		],
-		"server": [
-			"de.dragoncraft.dragonexperiments.DragonExperimentsServer"
-		],
 		"cardinal-components": [
 			"de.dragoncraft.dragonexperiments.components.ModComponents"]
 	},
